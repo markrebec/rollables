@@ -1,4 +1,4 @@
-module Bones
+module Rollables
   class Dice
     attr_reader :dice, :rolls
 

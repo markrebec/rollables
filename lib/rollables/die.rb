@@ -1,4 +1,4 @@
-module Bones
+module Rollables
   class Die
     attr_reader :rolls, :faces
 
