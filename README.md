@@ -66,4 +66,4 @@ Bones uses `rspec` and has coverage for most functionalty provided in the `/spec
 * Finish documentation
 * Refactor some of the core objects to use modules and included behavior
 * Support for more die faces besides strings and integers
-* Require ActiveSupport for arrays? Or port over the `Array.sum` to replace the temp one in place right now?
+* Require ActiveSupport for arrays? Or port over the `Array.sum` to replace the temp one in place right now (and add specs)?
