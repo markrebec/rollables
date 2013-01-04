@@ -41,7 +41,7 @@ in your Gemfile.
     Bones::Dice.new("2d8")                                          # => 2d8
     Bones::Dice.new(:d6, "1d8", 12, 6)                              # => 2d6, 1d8, 1d12
     Bones::Dice.new([:d6, "2d8", 12])                               # => 1d6, 2d8, 1d12
-    Bones::Dice.new(12, 6, Bones::Dice.new([10,20,30]), "2d6")      # => 1d12, 3d6, 1d(10,20,30)
+    Bones::Dice.new(12, 6, Bones::Die.new([10,20,30]), "2d6")       # => 1d12, 3d6, 1d(10,20,30)
     Bones::Dice.new(1..12, "2d20", Bones::Die.new(["a","b","c"]))   # => 1d12, 2d20, 1d(a,b,c)
 
     dice = Bones::Dice.new(:d6, "1d8", 12, 6)
