@@ -15,12 +15,12 @@ module Rollables
     end
 
     def to_s
-      combined_dice.collect { |faces,dcount| "#{dcount}#{faces}" }.join(",")
+      combined_notation.collect { |faces,dcount| "#{dcount}#{faces}" }.join(",")
     end
 
     protected
 
-    def combined_dice
+    def combined_notation
       combined = {}
       @dice.each do |die|
         face_key = (die.simple?) ? "d#{die.faces.length}" : "d(#{die.faces.to_s})"
@@ -34,7 +34,7 @@ module Rollables
       @dice = DiceCollection.new(*dice)
       @rolls = DiceRolls.new
       self.class.instance_eval do
-        [:high, :highest, :low, :lowest, :numeric?, :sequential?, :simple?].each do |m|
+        [:common, :high, :low, :numeric?, :sequential?, :simple?].each do |m|
           define_method(m) { send(:dice).send(m) }
         end
       end
@@ -47,24 +47,12 @@ module Rollables
       end
       alias_method :add_die, :add_dice
 
-      def high
-        numeric? ? highs.sum : highs
+      def common?
+        all? { |die| die.common? }
       end
 
-      def highest
-        return highs.sort.last if numeric?
-        sort do |x,y|
-          result = x.high <=> y.high
-          if result.nil?
-            if (x.faces.length <=> y.faces.length) == 0
-              x.high.is_a?(String) ? 1 : -1
-            else
-              x.faces.length <=> y.faces.length
-            end
-          else
-            result
-          end
-        end.last.high
+      def high
+        numeric? ? highs.sum : highs
       end
 
       def highs
@@ -73,22 +61,6 @@ module Rollables
 
       def low
         numeric? ? lows.sum : lows
-      end
-
-      def lowest
-        return lows.sort.first if numeric?
-        sort do |x,y|
-          result = x.low <=> y.low
-          if result.nil?
-            if (x.faces.length <=> y.faces.length) == 0
-              x.low.is_a?(String) ? 1 : -1
-            else
-              x.faces.length <=> y.faces.length
-            end
-          else
-            result
-          end
-        end.first.low
       end
 
       def lows
@@ -129,8 +101,40 @@ module Rollables
         end
       end
 
+      def highest
+        return highs.sort.last if numeric?
+        sort do |x,y|
+          result = x.high <=> y.high
+          if result.nil?
+            if (x.faces.length <=> y.faces.length) == 0
+              x.high.is_a?(String) ? 1 : -1
+            else
+              x.faces.length <=> y.faces.length
+            end
+          else
+            result
+          end
+        end.last.high
+      end
+
       def initialize(*dice)
         assign_dice(*dice)
+      end
+
+      def lowest
+        return lows.sort.first if numeric?
+        sort do |x,y|
+          result = x.low <=> y.low
+          if result.nil?
+            if (x.faces.length <=> y.faces.length) == 0
+              x.low.is_a?(String) ? 1 : -1
+            else
+              x.faces.length <=> y.faces.length
+            end
+          else
+            result
+          end
+        end.first.low
       end
     end
 

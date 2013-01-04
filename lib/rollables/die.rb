@@ -1,6 +1,6 @@
 module Rollables
   class Die
-    attr_reader :rolls, :faces
+    attr_reader :faces, :rolls
 
     def roll
       @rolls << DieRoll.new(self)

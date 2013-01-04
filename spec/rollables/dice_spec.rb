@@ -135,39 +135,39 @@ describe Rollables::Dice do
     Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).low.should == [1,1,"a"]
   end
 
-  it "should return the correct face value for highest" do
-    Rollables::Dice.new(8, 20, 6).highest.should == 20
-    Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).highest.should == 15
-    Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).highest.should == 12
-    Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == "f"
-    Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == "f"
-    Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == 8
-    Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).highest.should == "f"
-  end
+  #it "should return the correct face value for highest" do
+  #  Rollables::Dice.new(8, 20, 6).highest.should == 20
+  #  Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).highest.should == 15
+  #  Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).highest.should == 12
+  #  Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == "f"
+  #  Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == "f"
+  #  Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).highest.should == 8
+  #  Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).highest.should == "f"
+  #end
 
-  it "should return the correct face value for lowest" do
-    Rollables::Dice.new(8, 20, 6).lowest.should == 1
-    Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).lowest.should == 0
-    Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).lowest.should == "a"
-    Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == 1
-    Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == 1
-    Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == "a"
-    Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).lowest.should == 1
-  end
+  #it "should return the correct face value for lowest" do
+  #  Rollables::Dice.new(8, 20, 6).lowest.should == 1
+  #  Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).lowest.should == 0
+  #  Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).lowest.should == "a"
+  #  Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == 1
+  #  Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == 1
+  #  Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).lowest.should == "a"
+  #  Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).lowest.should == 1
+  #end
 
-  it "should sort numeric die when comparing highs/lows" do
-    Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).lowest.should == 0
-    Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).highest.should == 15
-  end
+  #it "should sort numeric die when comparing highs/lows" do
+  #  Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).lowest.should == 0
+  #  Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).highest.should == 15
+  #end
 
-  it "should leave order intact for non-numeric die when comparing highs/lows" do
-    Rollables::Dice.new(6, Rollables::Die.new(["b","a","x","c"])).lowest.should == "b"
-    Rollables::Dice.new(Rollables::Die.new([2,1,4,3,6,5]), Rollables::Die.new(["b","a","x","c"])).highest.should == 6
-    Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c","y"])).lowest.should == 1
-    Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c","y"])).highest.should == "y"
-    Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c"])).lowest.should == 1
-    Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c"])).highest.should == "c"
-  end
+  #it "should leave order intact for non-numeric die when comparing highs/lows" do
+  #  Rollables::Dice.new(6, Rollables::Die.new(["b","a","x","c"])).lowest.should == "b"
+  #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3,6,5]), Rollables::Die.new(["b","a","x","c"])).highest.should == 6
+  #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c","y"])).lowest.should == 1
+  #  Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c","y"])).highest.should == "y"
+  #  Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c"])).lowest.should == 1
+  #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c"])).highest.should == "c"
+  #end
   
   it "should return a properly formatted string from to_s" do
     Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6,1d12"
@@ -236,39 +236,39 @@ describe Rollables::Dice do
       Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).dice.low.should == [1,1,"a"]
     end
 
-    it "should return the correct face value for highest" do
-      Rollables::Dice.new(8, 20, 6).dice.highest.should == 20
-      Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).dice.highest.should == 15
-      Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).dice.highest.should == 12
-      Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == "f"
-      Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == "f"
-      Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == 8
-      Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).dice.highest.should == "f"
-    end
+    #it "should return the correct face value for highest" do
+    #  Rollables::Dice.new(8, 20, 6).dice.highest.should == 20
+    #  Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).dice.highest.should == 15
+    #  Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).dice.highest.should == 12
+    #  Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == "f"
+    #  Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == "f"
+    #  Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).dice.highest.should == 8
+    #  Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).dice.highest.should == "f"
+    #end
 
-    it "should return the correct face value for lowest" do
-      Rollables::Dice.new(8, 20, 6).dice.lowest.should == 1
-      Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).dice.lowest.should == 0
-      Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).dice.lowest.should == "a"
-      Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == 1
-      Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == 1
-      Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == "a"
-      Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).dice.lowest.should == 1
-    end
+    #it "should return the correct face value for lowest" do
+    #  Rollables::Dice.new(8, 20, 6).dice.lowest.should == 1
+    #  Rollables::Dice.new(12, Rollables::Die.new([0,5,10,15])).dice.lowest.should == 0
+    #  Rollables::Dice.new(6, 12, Rollables::Die.new(["a",2,3])).dice.lowest.should == "a"
+    #  Rollables::Dice.new(4, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == 1
+    #  Rollables::Dice.new(6, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == 1
+    #  Rollables::Dice.new(8, Rollables::Die.new(["a","b","c","d","e","f"])).dice.lowest.should == "a"
+    #  Rollables::Dice.new(Rollables::Die.new(["a","b","c","d","e","f"]), 6).dice.lowest.should == 1
+    #end
 
-    it "should sort numeric die when comparing highs/lows" do
-      Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).dice.lowest.should == 0
-      Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).dice.highest.should == 15
-    end
+    #it "should sort numeric die when comparing highs/lows" do
+    #  Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).dice.lowest.should == 0
+    #  Rollables::Dice.new(12, Rollables::Die.new([10,5,15,0])).dice.highest.should == 15
+    #end
 
-    it "should leave order intact for non-numeric die when comparing highs/lows" do
-      Rollables::Dice.new(6, Rollables::Die.new(["b","a","x","c"])).dice.lowest.should == "b"
-      Rollables::Dice.new(Rollables::Die.new([2,1,4,3,6,5]), Rollables::Die.new(["b","a","x","c"])).dice.highest.should == 6
-      Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c","y"])).dice.lowest.should == 1
-      Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c","y"])).dice.highest.should == "y"
-      Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c"])).dice.lowest.should == 1
-      Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c"])).dice.highest.should == "c"
-    end
+    #it "should leave order intact for non-numeric die when comparing highs/lows" do
+    #  Rollables::Dice.new(6, Rollables::Die.new(["b","a","x","c"])).dice.lowest.should == "b"
+    #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3,6,5]), Rollables::Die.new(["b","a","x","c"])).dice.highest.should == 6
+    #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c","y"])).dice.lowest.should == 1
+    #  Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c","y"])).dice.highest.should == "y"
+    #  Rollables::Dice.new(4, Rollables::Die.new(["b","a","x","c"])).dice.lowest.should == 1
+    #  Rollables::Dice.new(Rollables::Die.new([2,1,4,3]), Rollables::Die.new(["b","a","x","c"])).dice.highest.should == "c"
+    #end
   end
 
   describe Rollables::Dice::DiceRoll do
