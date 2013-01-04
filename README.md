@@ -71,3 +71,5 @@ Bones uses `rspec` and has coverage for most functionalty provided in the `/spec
 * Add support for RPG features like `XdY + Z` modifiers and such
 * Add flag to control whether numeric values are added together even when all faces are not numeric
 * Add support for applying math to dice. Example: `(1d6 * 1d3) + 1d8` instead of `1d6 + 1d3 + 1d8`
+* Implement 'drop low,' 'drop high,' and 'explode' + their notations
+
