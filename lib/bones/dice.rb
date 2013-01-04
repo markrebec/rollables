@@ -2,8 +2,6 @@ module Bones
   class Dice
     attr_reader :dice, :rolls
 
-    #delegate :high, :highest, :low, :lowest, :numeric?, :sequential?, :simple?, :to => :dice
-
     def add_dice(dice)
       @dice.add_dice(dice)
       self

@@ -2,8 +2,6 @@ module Bones
   class Die
     attr_reader :rolls, :faces
 
-    #delegate :common?, :high, :low, :numeric?, :sequential?, :simple?, :to => :faces
-    
     def roll
       @rolls << DieRoll.new(self)
       @rolls.last
