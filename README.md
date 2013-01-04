@@ -57,6 +57,10 @@ in your Gemfile.
     dice.roll                                                       # => d6=1 + d6=2 + d(x,y,z)=x = (1,2,x)
     dice.rolls                                                      # => [d6=3 + d6=1 + d(x,y,z)=y = (3,1,y), d6=4 + d6=3 + d(x,y,z)=x = (4,3,x), d6=1 + d6=2 + d(x,y,z)=x = (1,2,x)]
 
+## Testing
+
+Bones uses `rspec` and has coverage for most functionalty provided in the `/spec` directory.  If you want to run specs against the codebase, execute `bundle exec rspec` from within the checked out repo.
+
 ## TODO
 
 * Finish documentation
