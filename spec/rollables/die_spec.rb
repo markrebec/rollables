@@ -154,7 +154,7 @@ describe Rollables::Die do
   end
 
   it "should be able to be rolled" do
-    Rollables::Die.new(6).roll.should be_an_instance_of(Rollables::Die::DieRoll)
+    Rollables::Die.new(6).roll.should be_an_instance_of(Rollables::DieRoll)
   end
 
   it "should always return a face value within it's parameters when rolled" do
@@ -171,7 +171,7 @@ describe Rollables::Die do
     Rollables::Die.new(["x","y","z"]).to_s.should == "d(x,y,z)"
   end
 
-  describe Rollables::Die::DieRoll do
+  describe Rollables::DieRoll do
     it "should roll on init" do
       die = Rollables::Die.new(:d6)
       roll = die.roll
@@ -189,7 +189,7 @@ describe Rollables::Die do
     end
   end
 
-  describe Rollables::Die::DieRolls do
+  describe Rollables::DieRolls do
     it "should return a properly formatted string from to_s" do
       [Rollables::Die.new(6), Rollables::Die.new(["z","y","x"])].each do |die|
         5.times { die.roll }
@@ -198,7 +198,7 @@ describe Rollables::Die do
     end
   end
   
-  describe Rollables::Die::DieFace do
+  describe Rollables::DieFace do
     it "should return the correct modified instance" do
       die = Rollables::Die.new([1,"2","z"])
       die.faces[0].should be_a(Integer)
@@ -214,9 +214,9 @@ describe Rollables::Die do
     end
   end
 
-  describe Rollables::Die::DieFaces do
+  describe Rollables::DieFaces do
     it "should allow valid DieFace formats" do
-      Rollables::Die.new([1,"b2"]).faces.should be_an_instance_of(Rollables::Die::DieFaces)
+      Rollables::Die.new([1,"b2"]).faces.should be_an_instance_of(Rollables::DieFaces)
     end
     
     it "should not allow invalid DieFace formats" do
