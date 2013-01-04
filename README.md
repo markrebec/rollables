@@ -1,3 +1,3 @@
-= Bones
+# Bones
 
 Rollable dice for Ruby
