@@ -18,6 +18,8 @@ in your Gemfile.
 
 ### Single Die
 
+    # Creating Dice
+    
     Rollables::Die.new(6)                                               # => d6
     Rollables::Die.new(20)                                              # => d20
     Rollables::Die.new(:d8)                                             # => d8
@@ -27,6 +29,8 @@ in your Gemfile.
     Rollables::Die.new(["a","b","c"])                                   # => d(a,b,c)
     Rollables::Die.new([0,5,10,20,40,80])                               # => d(0,5,10,20,40,80)
 
+    # Rolling
+    
     die = Rollables::Die.new(6)
     die.roll                                                        # => 3
     die.roll                                                        # => 1
@@ -35,7 +39,27 @@ in your Gemfile.
     die.roll                                                        # => 6
     die.rolls                                                       # => [3, 1, 5, 1, 6]
 
+    # Modifier Blocks
+    
+    die = Rollables::Die.new(6)
+    die.roll { |result| result + 5 }                                # => 8    (adds +5 to result)
+    die.roll { |result| result + 5 }                                # => 11   (adds +5 to result)
+    die.roll                                                        # => 3
+    die.roll                                                        # => 1
+    die.roll                                                        # => 5
+    
+    # Or
+    
+    modifier = Proc.new { |result| result + 5 }
+    die.roll &modifier                                              # => 7
+    die.roll &modifier                                              # => 6
+    die.roll &modifier                                              # => 9
+    die.roll                                                        # => 5
+    die.roll                                                        # => 3
+
 ### Collection of Dice
+
+    # Creating Dice
 
     Rollables::Dice.new(6)                                              # => 1d6
     Rollables::Dice.new("2d8")                                          # => 2d8
@@ -44,6 +68,8 @@ in your Gemfile.
     Rollables::Dice.new(12, 6, Rollables::Die.new([10,20,30]), "2d6")       # => 1d12, 3d6, 1d(10,20,30)
     Rollables::Dice.new(1..12, "2d20", Rollables::Die.new(["a","b","c"]))   # => 1d12, 2d20, 1d(a,b,c)
 
+    # Rolling
+
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
     dice.roll                                                       # => d6=1 + d8=1 + d12=12 + d6=6 = 20
     dice.roll                                                       # => d6=1 + d8=3 + d12=1 + d6=5 = 10
@@ -51,11 +77,20 @@ in your Gemfile.
     dice.roll                                                       # => d6=1 + d8=8 + d12=1 + d6=2 = 12
     dice.rolls                                                      # => [d6=1 + d8=1 + d12=12 + d6=6 = 20, d6=1 + d8=3 + d12=1 + d6=5 = 10, d6=5 + d8=6 + d12=1 + d6=4 = 16, d6=1 + d8=8 + d12=1 + d6=2 = 12]
 
+    # Or
+
     dice = Rollables::Dice.new("2d6", Rollables::Die(["x","y","z"]))
     dice.roll                                                       # => d6=3 + d6=1 + d(x,y,z)=y = (3,1,y)
     dice.roll                                                       # => d6=4 + d6=3 + d(x,y,z)=x = (4,3,x)
     dice.roll                                                       # => d6=1 + d6=2 + d(x,y,z)=x = (1,2,x)
     dice.rolls                                                      # => [d6=3 + d6=1 + d(x,y,z)=y = (3,1,y), d6=4 + d6=3 + d(x,y,z)=x = (4,3,x), d6=1 + d6=2 + d(x,y,z)=x = (1,2,x)]
+
+    # Modifier Blocks
+
+    dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
+    dice.roll { |results| results << 10 }                           # => d6=1 + d8=1 + d12=12 + d6=6 = 30   (adds an extra value of +10 to the result set)
+    dice.roll { |results| results.map { |result| result + 1 } }     # => d6=2 + d8=4 + d12=2 + d6=6 = 14    (adds an extra value of +1 to each result in the set)
+    dice.roll                                                       # => d6=5 + d8=6 + d12=1 + d6=4 = 16
 
 ## Tests
 

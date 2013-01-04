@@ -151,9 +151,9 @@ module Rollables
 
     def to_s
       if @dice.numeric?
-        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = #{value.sum}"
+        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.result.to_s}" }.join(" + ")} = #{result.sum}"
       else
-        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = (#{value.join(",")})"
+        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.result.to_s}" }.join(" + ")} = (#{result.join(",")})"
       end
     end
 

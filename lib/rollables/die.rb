@@ -106,7 +106,7 @@ module Rollables
     alias_method :value, :result
     
     def to_s
-      @result.to_s
+      result.to_s
     end
 
     protected
