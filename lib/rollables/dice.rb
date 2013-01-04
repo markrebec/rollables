@@ -8,9 +8,9 @@ module Rollables
     end
     alias_method :add_die, :add_dice
 
-    def roll
+    def roll(&block)
       raise "A set of Dice must contain at least 1 Die" unless @dice.length > 0
-      @rolls << DiceRoll.new(@dice)
+      @rolls << DiceRoll.new(@dice, &block)
       @rolls.last
     end
 
@@ -140,27 +140,36 @@ module Rollables
   end
 
   class DiceRoll
-    attr_reader :rolls, :timestamp
+    attr_accessor :modifier
+    attr_reader :results, :timestamp
+
+    def result
+      # TODO add flag to control whether modifier block is passed through or added at the end
+      @modifier.nil? ? @results.collect(&:value) : @modifier.call(@results.collect(&:value))
+    end
+    alias_method :value, :result
 
     def to_s
       if @dice.numeric?
-        "#{@rolls.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = #{value.sum}"
+        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = #{value.sum}"
       else
-        "#{@rolls.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = (#{value.join(",")})"
+        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.value.to_s}" }.join(" + ")} = (#{value.join(",")})"
       end
     end
 
-    def value
-      @rolls.collect &:value
-    end
-    alias_method :result, :value
-
     protected
     
-    def initialize(dice)
+    def initialize(dice, &block)
       @dice = dice
-      @rolls = []
-      @dice.each { |die| @rolls << die.roll }
+      @modifier = block if block_given?
+      @results = []
+      @result = nil
+      roll
+    end
+
+    def roll
+      # TODO add flag to control whether modifier block is passed through or added at the end
+      @dice.each { |die| @results << die.roll }
       @timestamp = Time.now
     end
   end

@@ -162,6 +162,15 @@ describe Rollables::Die do
       20.times { die.faces.include?(die.roll.value).should be_true }
     end
   end
+  
+  it "should be able to be rolled with a modifier" do
+    [Rollables::Die.new(6), Rollables::Die.new(:d12)].each do |die|
+      20.times { die.faces.include?(die.roll { |result| result + 3 }.result - 3).should be_true }
+    end
+    [Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["hello","goodbye","test"])].each do |die|
+      20.times { die.faces.map { |face| "#{face}x" }.include?(die.roll { |result| "#{result}x" }.result).should be_true }
+    end
+  end
 
   it "should return a properly formatted string from to_s" do
     Rollables::Die.new(20).to_s.should == "d20"

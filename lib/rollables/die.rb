@@ -2,8 +2,8 @@ module Rollables
   class Die
     attr_reader :faces, :rolls
 
-    def roll
-      @rolls << DieRoll.new(self)
+    def roll(&block)
+      @rolls << DieRoll.new(self, &block)
       @rolls.last
     end
 
@@ -97,22 +97,28 @@ module Rollables
   end
 
   class DieRoll
-    attr_reader :die, :timestamp, :value
-    alias_method :result, :value
+    attr_accessor :modifier
+    attr_reader :die, :timestamp
    
+    def result
+      @modifier.nil? ? @result : @modifier.call(@result)
+    end
+    alias_method :value, :result
+    
     def to_s
-      @value.to_s
+      @result.to_s
     end
 
     protected
 
-    def initialize(die)
+    def initialize(die, &block)
       @die = die
+      @modifier = block if block_given?
       roll
     end
 
     def roll
-      @value = @die.faces.sample
+      @result = @die.faces.sample
       @timestamp = Time.now
     end
   end
