@@ -173,11 +173,11 @@ describe Rollables::Die do
   end
 
   it "should return a properly formatted string from to_s" do
-    Rollables::Die.new(20).to_s.should == "d20"
-    Rollables::Die.new(:d6).to_s.should == "d6"
-    Rollables::Die.new(["1","2","3"]).to_s.should == "d3"
-    Rollables::Die.new(2..4).to_s.should == "d(2,3,4)"
-    Rollables::Die.new(["x","y","z"]).to_s.should == "d(x,y,z)"
+    Rollables::Die.new(20).to_s.should == "1d20"
+    Rollables::Die.new(:d6).to_s.should == "1d6"
+    Rollables::Die.new(["1","2","3"]).to_s.should == "1d3"
+    Rollables::Die.new(2..4).to_s.should == "1d(2,3,4)"
+    Rollables::Die.new(["x","y","z"]).to_s.should == "1d(x,y,z)"
   end
 end
 

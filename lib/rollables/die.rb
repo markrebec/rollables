@@ -1,6 +1,6 @@
 module Rollables
   class Die < Array
-    attr_reader :rolls
+    attr_reader :rolls, :notation
     
     def common?
       length == 6 && simple?
@@ -32,34 +32,21 @@ module Rollables
     end
 
     def to_s
-      simple? ? "d#{length}" : "d(#{join(",")})"
+      simple? ? @notation.to_s : "1d(#{join(",")})"
     end
     
     protected
-    
-    def d_to_a(faces)
-      dmatch = faces.match(/\A(1[dD]||[dD])?(\d+)\Z/)
-      raise "Cannot create Die from '#{faces}'" if dmatch.nil?
-      dmatch[2].to_i.times.collect { |face| face+1 }
-    end
 
-    def initialize(faces)
-      super(parse_faces(faces).map { |face| DieFace.new(face) })
+    def initialize(notation)
+      initialize_notation notation
+      raise "Cannot create single Die from '#{notation}'" if @notation.dice > 1
+      raise "Cannot create Die with fewer than 2 faces" if @notation.faces.length < 2
+      super @notation.faces.map { |face| DieFace.new(face) }
       @rolls = DieRolls.new
     end
 
-    def parse_faces(faces)
-      if faces.is_a?(String) || faces.is_a?(Integer) || faces.is_a?(Symbol)
-        faces = d_to_a(faces.to_s)
-      elsif faces.is_a?(Range)
-        faces = faces.to_a
-      elsif faces.is_a?(Array)
-      else
-        raise "Cannot create Die from '#{faces}'"
-      end
-      
-      raise "A Die must have 2 or more faces" unless faces.length > 1
-      faces
+    def initialize_notation(notation)
+      @notation = notation.is_a?(DieNotation) ? notation : DieNotation.new(notation)
     end
   end
 
@@ -69,10 +56,12 @@ module Rollables
 
       face.instance_eval do
         # shared methods go here
-        if self.is_a?(String)
-          # string methods go here
-        elsif self.is_a?(Integer)
+        if self.is_a?(Integer)
           # integer methods go here
+        elsif self.is_a?(String)
+          # string methods go here
+        #elsif self.is_a?(Symbol)
+          # symbol methods go here
         else
           raise "Unsupported DieFace type `#{face.class.name}`"
         end
@@ -81,8 +70,6 @@ module Rollables
       face
     end
   end
-
-  class DieNotation; end
 
   class DieRoll
     attr_accessor :modifier

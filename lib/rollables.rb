@@ -1,3 +1,5 @@
 require 'array'
+require 'object'
+require 'rollables/die_notation'
 require 'rollables/die'
 require 'rollables/dice'

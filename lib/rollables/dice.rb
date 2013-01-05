@@ -1,5 +1,6 @@
 module Rollables
   class Dice < Array
+    # TODO allow nested Dice (not just Die)
     attr_reader :rolls
 
     def add_dice(dice)
@@ -47,7 +48,7 @@ module Rollables
     end
 
     def to_s
-      notation_obj.collect { |notation,die_count| "#{die_count}#{notation}" }.join(",")
+      notation_string
     end
 
     protected
@@ -58,39 +59,45 @@ module Rollables
     end
 
     def assign_die(die)
-      if die.is_a? Die
-        self << die
-      else
-        parse_notation_str(die).each { |d| self << d }
-      end
-    end
-
-    def notation_obj
-      combined = {}
-      each do |die|
-        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
-        combined[face_key] = 0 unless combined.has_key?(face_key)
-        combined[face_key] += 1
-      end
-      combined
-    end
-
-    def parse_notation_str(diestr)
-      dmatch = diestr.to_s.match(/\A(\d+)[dD](\d+)\Z/)
-      if dmatch.nil?
-        return [Die.new(diestr)]
-      else
-        return dmatch[1].to_i.times.collect { Die.new(dmatch[2]) }
-      end
+      die.is_a?(Die) ? self << die : parse_notation(die)
     end
 
     def initialize(*dice)
       assign_dice(*dice)
       @rolls = DiceRolls.new
     end
-  end
 
-  class DiceNotation; end
+    def notation_string
+      combined = {}
+      each do |die|
+        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
+        combined[face_key] = 0 unless combined.has_key?(face_key)
+        combined[face_key] += 1
+      end
+      combined.collect { |notation,die_count| "#{die_count}#{notation}" }.join(",")
+    end
+
+    def parse_notation(notation)
+      # TODO refactor this once we support dice within dice
+      if notation.is_a?(DieNotation)
+        notation.dice.times { assign_die(Die.new(notation.singular)) }
+        # TODO add drop/modifier to collection?
+      else
+        # if stringy and spaces
+        if notation.stringy? && notation.to_s.match(/\s/)
+          notation.split(/\s*/).each do |n|
+            nnotation = DieNotation.new(n)
+            nnotation.dice.times { assign_die(Die.new(nnotation.singular)) }
+            # TODO add drop/modifier to collection?
+          end
+        else
+          nnotation = DieNotation.new(notation)
+          nnotation.dice.times { assign_die(Die.new(nnotation.singular)) }
+          # TODO add drop/modifier to collection?
+        end
+      end
+    end
+  end
 
   class DiceRoll
     attr_accessor :modifier
