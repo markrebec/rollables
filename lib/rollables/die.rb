@@ -3,7 +3,7 @@ module Rollables
     attr_reader :rolls, :notation
     
     def common?
-      length == 6 && simple?
+      simple? && high == 6
     end
 
     def high

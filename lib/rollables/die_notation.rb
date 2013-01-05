@@ -2,17 +2,33 @@ module Rollables
   class DieNotation
     attr_accessor :dice, :drop, :faces, :modifier
 
-    def self.parse(notation)
-      self.new(notation)
-    end
-
     def self.create(notation)
       if notation.stringy? && notation.to_s.match(/\s/)
         Dice.new(notation.split(/\s/))
       else
         notation = self.new(notation)
-        (notation.dice > 1) ? Dice.new(notation.to_s) : Die.new(notation)
+        (notation.dice > 1) ? Dice.new(notation) : Die.new(notation)
       end
+    end
+
+    def self.parse(notation)
+      self.new(notation)
+    end
+
+    def common?
+      simple? && high == 6
+    end
+
+    def high
+      numeric? ? @faces.sort.last : @faces.last
+    end
+
+    def low
+      numeric? ? @faces.sort.first : @faces.first
+    end
+
+    def numeric?
+      @faces.all? { |face| face.is_a?(Integer) }
     end
 
     def parse(notation=nil)
@@ -39,6 +55,14 @@ module Rollables
       self
     end
 
+    def sequential?
+      numeric? && @faces.sort.each_cons(2).all? { |x,y| y == x + 1 }
+    end
+
+    def simple?
+      sequential? && low == 1
+    end
+
     def singular
       self.class.new("1d#{@faces.length}")
     end
@@ -52,7 +76,7 @@ module Rollables
     end
 
     def to_s
-      @faces.length > 0 ? "#{@dice}d#{@faces.length}#{@drop}#{@modifier}" : ""
+      @faces.length > 0 ? "#{@dice}d#{@faces.length}#{@drop}#{@modifier}#{"(#{@faces.join(",")})" unless simple?}" : ""
     end
 
     protected
@@ -63,7 +87,7 @@ module Rollables
     end
 
     def parse_array(notation)
-      @faces = notation
+      @faces = notation.map { |face| (face.stringy? && face.to_s.to_i.to_s == face.to_s) ? face.to_i : face }
     end
 
     def parse_range(notation)
