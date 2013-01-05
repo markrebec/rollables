@@ -54,12 +54,12 @@ module Rollables
     protected
 
     def assign_dice(*dice)
-      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die)
-      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die)) ? die.each { |d| assign_dice(d) } : assign_die(die) }
+      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die) && !dice.is_a?(Dice)
+      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die) && !die.is_a?(Dice)) ? die.each { |d| assign_die(d) } : assign_die(die) }
     end
 
     def assign_die(die)
-      die.is_a?(Die) ? self << die : parse_notation(die)
+      (die.is_a?(Die) || die.is_a?(Dice)) ? self << die : parse_notation(die)
     end
 
     def initialize(*dice)
@@ -83,7 +83,6 @@ module Rollables
         notation.dice.times { assign_die(Die.new(notation.singular)) }
         # TODO add drop/modifier to collection?
       else
-        # if stringy and spaces
         if notation.stringy? && notation.to_s.match(/\s/)
           notation.split(/\s*/).each do |n|
             nnotation = DieNotation.new(n)
