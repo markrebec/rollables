@@ -8,93 +8,93 @@ describe Rollables::Dice do
 
   it "should have a valid Die" do
     dice = Rollables::Dice.new(6)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 6
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 6
   end
   
   it "should allow instantiation with integers" do
     dice = Rollables::Dice.new(6)
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 6
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 6
   end
 
   it "should allow instantiation with strings" do
     dice = Rollables::Dice.new("6")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 6
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 6
   end
 
   it "should allow instantiation with :d20 formatted symbols" do
     dice = Rollables::Dice.new(:d20)
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 20
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 20
   end
 
   it "should allow instantiation with 'd20' formatted strings" do
     dice = Rollables::Dice.new("d20")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 20
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 20
   end
 
   it "should allow instantiation with '1d20' formatted strings" do
     dice = Rollables::Dice.new("1d20")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.length.should == 20
+    dice.first.should be_an_instance_of(Rollables::Die)
+    dice.first.length.should == 20
   end
 
   it "should allow instantiation of multiple dice" do
     dice = Rollables::Dice.new(20, 12, 6)
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].length.should == 20
-    dice.dice[1].length.should == 12
-    dice.dice[2].length.should == 6
+    dice[0].length.should == 20
+    dice[1].length.should == 12
+    dice[2].length.should == 6
   end
   
   it "should allow instantiation of multiple dice with arrays" do
     dice = Rollables::Dice.new([20, 12, 6])
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].length.should == 20
-    dice.dice[1].length.should == 12
-    dice.dice[2].length.should == 6
+    dice[0].length.should == 20
+    dice[1].length.should == 12
+    dice[2].length.should == 6
   end
 
   it "should allow instantiation of multiple dice with mixed formats" do
     dice = Rollables::Dice.new(20, "12", :d6, "d20", "1d6")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].length.should == 20
-    dice.dice[1].length.should == 12
-    dice.dice[2].length.should == 6
-    dice.dice[3].length.should == 20
-    dice.dice[4].length.should == 6
+    dice[0].length.should == 20
+    dice[1].length.should == 12
+    dice[2].length.should == 6
+    dice[3].length.should == 20
+    dice[4].length.should == 6
   end
 
   it "should allow instantiation of multiple dice with '2d20' formatted strings" do
     dice = Rollables::Dice.new("2d20")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice.length.should == 2
-    dice.dice.each do |die|
+    dice.length.should == 2
+    dice.each do |die|
       die.should be_an_instance_of(Rollables::Die)
       die.length.should == 20
     end
   end
 
   it "should allow adding a single die" do
-    Rollables::Dice.new.add_die(:d6).dice.length.should == 1
-    Rollables::Dice.new(20).add_die(:d6).dice.length.should == 2
+    Rollables::Dice.new.add_die(:d6).length.should == 1
+    Rollables::Dice.new(20).add_die(:d6).length.should == 2
   end
 
   it "should allow adding multiple dice" do
-    Rollables::Dice.new.add_dice([:d6, "2d8"]).dice.length.should == 3
-    Rollables::Dice.new(20).add_dice([:d6, "2d8"]).dice.length.should == 4
+    Rollables::Dice.new.add_dice([:d6, "2d8"]).length.should == 3
+    Rollables::Dice.new(20).add_dice([:d6, "2d8"]).length.should == 4
   end
 
   it "should allow chaining the addition of dice" do
-    Rollables::Dice.new.add_dice([6, 12]).add_die(:d8).add_dice("2d20").dice.length.should == 5
+    Rollables::Dice.new.add_dice([6, 12]).add_die(:d8).add_dice("2d20").length.should == 5
   end
 
   it "should be numeric if all die have all numeric faces" do
@@ -155,68 +155,6 @@ describe Rollables::Dice do
       roll = dice.roll { |results| results.map { |result| result + 1 } }
       roll.result.sum.should be_between(4, 20)
     end
-  end
-end
-
-describe Rollables::DiceCollection do
-  it "should allow adding a single die" do
-    d1 = Rollables::Dice.new
-    d1.dice.add_die(:d6)
-    d1.dice.length.should == 1
-    d2 = Rollables::Dice.new(20)
-    d2.dice.add_die(:d6)
-    d2.dice.length.should == 2
-  end
-
-  it "should allow adding multiple dice" do
-    d1 = Rollables::Dice.new
-    d1.dice.add_dice([:d6, "2d8"])
-    d1.dice.length.should == 3
-    d2 = Rollables::Dice.new(20)
-    d2.dice.add_dice([:d6, "2d8"])
-    d2.dice.length.should == 4
-  end
-  
-  it "should allow chaining the addition of dice" do
-    Rollables::Dice.new.dice.add_dice([6, 12]).add_die(:d8).add_dice("2d20").length.should == 5
-  end
-  
-  it "should be numeric if all die have all numeric faces" do
-    Rollables::Dice.new(:d6, 1..8, 20).dice.numeric?.should be_true
-  end
-
-  it "should not be numeric if any die have any non-numeric faces" do
-    Rollables::Dice.new(:d6, Rollables::Die.new(["a","b","c"]), 20).dice.numeric?.should be_false
-  end
-
-  it "should be sequential if all die are all numeric and sequential" do
-    Rollables::Dice.new(6, 12, Rollables::Die.new([2,5,3,4])).dice.sequential?.should be_true
-  end
-
-  it "should not be sequential if any die are non-numeric or non-sequential" do
-    Rollables::Dice.new(6, Rollables::Die.new([1,2,3,4,"a"])).dice.sequential?.should be_false
-    Rollables::Dice.new(6, :d20, Rollables::Die.new([2,5,4])).dice.sequential?.should be_false
-  end
-
-  it "should be simple if all die are all simple" do
-    Rollables::Dice.new(6, 12, Rollables::Die.new([1,2,5,3,4])).dice.simple?.should be_true
-  end
-
-  it "should not be simple if any die are not simple" do
-    Rollables::Dice.new(6, Rollables::Die.new([1,2,3,4,"a"])).dice.simple?.should be_false
-    Rollables::Dice.new(6, :d20, Rollables::Die.new([2,3,4])).dice.simple?.should be_false
-  end
-  
-  it "should return the correct value(s) for high" do
-    Rollables::Dice.new(8, 20, 6).dice.high.should == 34
-    Rollables::Dice.new(20, Rollables::Die.new([0,5,10])).dice.high.should == 30
-    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).dice.high.should == [6,20,3]
-  end
-  
-  it "should return the correct value(s) for low" do
-    Rollables::Dice.new(8, 20, 6).dice.low.should == 3
-    Rollables::Dice.new(20, Rollables::Die.new([0,5,10])).dice.low.should == 1
-    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).dice.low.should == [1,1,"a"]
   end
 end
 

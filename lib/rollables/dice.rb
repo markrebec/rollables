@@ -1,47 +1,7 @@
 module Rollables
-  class Dice
-    attr_reader :dice, :rolls
+  class Dice < Array
+    attr_reader :rolls
 
-    def add_dice(dice)
-      @dice.add_dice(dice)
-      self
-    end
-    alias_method :add_die, :add_dice
-
-    def roll(&block)
-      raise "A set of Dice must contain at least 1 Die" unless @dice.length > 0
-      @rolls << DiceRoll.new(@dice, &block)
-      @rolls.last
-    end
-
-    def to_s
-      combined_notation.collect { |faces,dcount| "#{dcount}#{faces}" }.join(",")
-    end
-
-    protected
-
-    def combined_notation
-      combined = {}
-      @dice.each do |die|
-        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
-        combined[face_key] = 0 unless combined.has_key?(face_key)
-        combined[face_key] += 1
-      end
-      combined
-    end
-
-    def initialize(*dice)
-      @dice = DiceCollection.new(*dice)
-      @rolls = DiceRolls.new
-      self.class.instance_eval do
-        [:common, :high, :low, :numeric?, :sequential?, :simple?].each do |m|
-          define_method(m) { send(:dice).send(m) }
-        end
-      end
-    end
-  end
-
-  class DiceCollection < Array
     def add_dice(dice)
       assign_dice(dice)
       self
@@ -72,6 +32,12 @@ module Rollables
       all? { |die| die.numeric? }
     end
 
+    def roll(&block)
+      raise "A set of Dice must contain at least 1 Die" unless length > 0
+      @rolls << DiceRoll.new(self, &block)
+      @rolls.last
+    end
+
     def sequential?
       all? { |die| die.sequential? }
     end
@@ -80,7 +46,11 @@ module Rollables
       all? { |die| die.simple? }
     end
 
-    protected 
+    def to_s
+      notation_obj.collect { |notation,die_count| "#{die_count}#{notation}" }.join(",")
+    end
+
+    protected
 
     def assign_dice(*dice)
       dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die)
@@ -91,22 +61,36 @@ module Rollables
       if die.is_a? Die
         self << die
       else
-        smatch = die.to_s.match(/\A(\d+)[dD](\d+)\Z/)
-        if smatch.nil?
-          self << Die.new(die)
-        else
-          smatch[1].to_i.times do
-            self << Die.new(smatch[2])
-          end
-        end
+        parse_notation_str(die).each { |d| self << d }
+      end
+    end
+
+    def notation_obj
+      combined = {}
+      each do |die|
+        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
+        combined[face_key] = 0 unless combined.has_key?(face_key)
+        combined[face_key] += 1
+      end
+      combined
+    end
+
+    def parse_notation_str(diestr)
+      dmatch = diestr.to_s.match(/\A(\d+)[dD](\d+)\Z/)
+      if dmatch.nil?
+        return [Die.new(diestr)]
+      else
+        return dmatch[1].to_i.times.collect { Die.new(dmatch[2]) }
       end
     end
 
     def initialize(*dice)
       assign_dice(*dice)
+      @rolls = DiceRolls.new
     end
-
   end
+
+  class DiceNotation; end
 
   class DiceRoll
     attr_accessor :modifier
