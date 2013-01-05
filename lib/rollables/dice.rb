@@ -23,7 +23,7 @@ module Rollables
     def combined_notation
       combined = {}
       @dice.each do |die|
-        face_key = (die.simple?) ? "d#{die.faces.length}" : "d(#{die.faces.to_s})"
+        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
         combined[face_key] = 0 unless combined.has_key?(face_key)
         combined[face_key] += 1
       end
@@ -83,8 +83,8 @@ module Rollables
     protected 
 
     def assign_dice(*dice)
-      dice = [dice] unless dice.is_a? Array
-      dice.each { |die| die.is_a?(Array) ? die.each { |d| assign_dice(d) } : assign_die(die) }
+      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die)
+      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die)) ? die.each { |d| assign_dice(d) } : assign_die(die) }
     end
 
     def assign_die(die)
@@ -102,41 +102,10 @@ module Rollables
       end
     end
 
-    def highest
-      return highs.sort.last if numeric?
-      sort do |x,y|
-        result = x.high <=> y.high
-        if result.nil?
-          if (x.faces.length <=> y.faces.length) == 0
-            x.high.is_a?(String) ? 1 : -1
-          else
-            x.faces.length <=> y.faces.length
-          end
-        else
-          result
-        end
-      end.last.high
-    end
-
     def initialize(*dice)
       assign_dice(*dice)
     end
 
-    def lowest
-      return lows.sort.first if numeric?
-      sort do |x,y|
-        result = x.low <=> y.low
-        if result.nil?
-          if (x.faces.length <=> y.faces.length) == 0
-            x.low.is_a?(String) ? 1 : -1
-          else
-            x.faces.length <=> y.faces.length
-          end
-        else
-          result
-        end
-      end.first.low
-    end
   end
 
   class DiceRoll
@@ -150,6 +119,7 @@ module Rollables
     alias_method :value, :result
 
     def to_s
+      # TODO rework this so it doesn't require DieRoll to have a copy of Die
       if @dice.numeric?
         "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.result.to_s}" }.join(" + ")} = #{result.sum}"
       else

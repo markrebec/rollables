@@ -9,68 +9,68 @@ describe Rollables::Dice do
   it "should have a valid Die" do
     dice = Rollables::Dice.new(6)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 6
+    dice.dice.first.length.should == 6
   end
   
   it "should allow instantiation with integers" do
     dice = Rollables::Dice.new(6)
     dice.should be_an_instance_of(Rollables::Dice)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 6
+    dice.dice.first.length.should == 6
   end
 
   it "should allow instantiation with strings" do
     dice = Rollables::Dice.new("6")
     dice.should be_an_instance_of(Rollables::Dice)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 6
+    dice.dice.first.length.should == 6
   end
 
   it "should allow instantiation with :d20 formatted symbols" do
     dice = Rollables::Dice.new(:d20)
     dice.should be_an_instance_of(Rollables::Dice)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 20
+    dice.dice.first.length.should == 20
   end
 
   it "should allow instantiation with 'd20' formatted strings" do
     dice = Rollables::Dice.new("d20")
     dice.should be_an_instance_of(Rollables::Dice)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 20
+    dice.dice.first.length.should == 20
   end
 
   it "should allow instantiation with '1d20' formatted strings" do
     dice = Rollables::Dice.new("1d20")
     dice.should be_an_instance_of(Rollables::Dice)
     dice.dice.first.should be_an_instance_of(Rollables::Die)
-    dice.dice.first.faces.length.should == 20
+    dice.dice.first.length.should == 20
   end
 
   it "should allow instantiation of multiple dice" do
     dice = Rollables::Dice.new(20, 12, 6)
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].faces.length.should == 20
-    dice.dice[1].faces.length.should == 12
-    dice.dice[2].faces.length.should == 6
+    dice.dice[0].length.should == 20
+    dice.dice[1].length.should == 12
+    dice.dice[2].length.should == 6
   end
   
   it "should allow instantiation of multiple dice with arrays" do
     dice = Rollables::Dice.new([20, 12, 6])
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].faces.length.should == 20
-    dice.dice[1].faces.length.should == 12
-    dice.dice[2].faces.length.should == 6
+    dice.dice[0].length.should == 20
+    dice.dice[1].length.should == 12
+    dice.dice[2].length.should == 6
   end
 
   it "should allow instantiation of multiple dice with mixed formats" do
     dice = Rollables::Dice.new(20, "12", :d6, "d20", "1d6")
     dice.should be_an_instance_of(Rollables::Dice)
-    dice.dice[0].faces.length.should == 20
-    dice.dice[1].faces.length.should == 12
-    dice.dice[2].faces.length.should == 6
-    dice.dice[3].faces.length.should == 20
-    dice.dice[4].faces.length.should == 6
+    dice.dice[0].length.should == 20
+    dice.dice[1].length.should == 12
+    dice.dice[2].length.should == 6
+    dice.dice[3].length.should == 20
+    dice.dice[4].length.should == 6
   end
 
   it "should allow instantiation of multiple dice with '2d20' formatted strings" do
@@ -79,7 +79,7 @@ describe Rollables::Dice do
     dice.dice.length.should == 2
     dice.dice.each do |die|
       die.should be_an_instance_of(Rollables::Die)
-      die.faces.length.should == 20
+      die.length.should == 20
     end
   end
 
