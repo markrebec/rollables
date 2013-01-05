@@ -99,7 +99,7 @@ module Rollables
       raise "Invalid DieNotation string" if matches.nil?
       @dice = matches[2].to_i unless matches[2].nil? || matches[2].empty?
       @faces = matches[3].to_i.times.map { |face| face+1 }
-      @drop = matches[4].upcase unless matches[4].nil? || matches[4].empty?
+      @drop = matches[4].downcase unless matches[4].nil? || matches[4].empty?
       @modifier = matches[5] unless matches[5].nil? || matches[5].empty?
     end
   end
