@@ -111,7 +111,7 @@ describe Rollables::DieNotation do
     n.faces.length.should == 8
     n.drop.type.should == 'l'
     n.drop.count.should == 1
-    n.modifier.should == '+(2*10)'
+    n.modifier.raw.should == '+(2*10)'
     
     n = Rollables::DieNotation.new("3d8h+(2*10)")
     n.should be_an_instance_of(Rollables::DieNotation)
@@ -119,7 +119,7 @@ describe Rollables::DieNotation do
     n.faces.length.should == 8
     n.drop.type.should == 'h'
     n.drop.count.should == 1
-    n.modifier.should == '+(2*10)'
+    n.modifier.raw.should == '+(2*10)'
   end
 
   it "should accept a string formatted with 'XdYM'" do
@@ -128,7 +128,7 @@ describe Rollables::DieNotation do
     n.dice.should == 4
     n.faces.length.should == 12
     n.drop.should be_nil
-    n.modifier.should == '+10'
+    n.modifier.raw.should == '+10'
   end
 
   it "should not accept a string formatted with 'dYSM'" do
@@ -145,7 +145,7 @@ describe Rollables::DieNotation do
     n.dice.should == 1
     n.faces.length.should == 8
     n.drop.should be_nil
-    n.modifier.should == '+(2*10)'
+    n.modifier.raw.should == '+(2*10)'
   end
 
   it "should not accept a string formatted with 'YSM'" do
@@ -284,7 +284,7 @@ describe Rollables::DieNotation do
     n.dice.should == 1
     n.faces.length.should == 8
     n.drop.should be_nil
-    n.modifier.should == '+10'
+    n.modifier.raw.should == '+10'
   end
 
   it "should convert a single notation string to a new object with #parse" do
