@@ -17,12 +17,10 @@ describe Rollables::DieNotation do
 
   it "should default to a single die" do
     Rollables::DieNotation.new(8).dice.should == 1
-    Rollables::DieNotation.new("8").dice.should == 1
+    Rollables::DieNotation.new("6").dice.should == 1
     Rollables::DieNotation.new("d8").dice.should == 1
-    Rollables::DieNotation.new("8L").dice.should == 1
     Rollables::DieNotation.new("d8+10").dice.should == 1
-    Rollables::DieNotation.new("8H+10").dice.should == 1
-    Rollables::DieNotation.new("d8L+(10*10)").dice.should == 1
+    Rollables::DieNotation.new("d12+(10*10)").dice.should == 1
   end
 
   it "should accept an integer" do
@@ -53,11 +51,11 @@ describe Rollables::DieNotation do
   end
   
   it "should accept a symbol" do
-    n = Rollables::DieNotation.new(:d12l)
+    n = Rollables::DieNotation.new(:d12)
     n.should be_an_instance_of(Rollables::DieNotation)
     n.dice.should == 1
     n.faces.length.should == 12
-    n.drop.should == 'l'
+    n.drop.should be_nil
     n.modifier.should be_nil
   end
 
@@ -93,16 +91,34 @@ describe Rollables::DieNotation do
     n.should be_an_instance_of(Rollables::DieNotation)
     n.dice.should == 5
     n.faces.length.should == 6
-    n.drop.should == 'l'
+    n.drop.type.should == 'l'
+    n.drop.count.should == 1
+    n.modifier.should be_nil
+    
+    n = Rollables::DieNotation.new("5d6h2")
+    n.should be_an_instance_of(Rollables::DieNotation)
+    n.dice.should == 5
+    n.faces.length.should == 6
+    n.drop.type.should == 'h'
+    n.drop.count.should == 2
     n.modifier.should be_nil
   end
 
   it "should accept a string formatted with 'XdYSM'" do
+    n = Rollables::DieNotation.new("4d8l1+(2*10)")
+    n.should be_an_instance_of(Rollables::DieNotation)
+    n.dice.should == 4
+    n.faces.length.should == 8
+    n.drop.type.should == 'l'
+    n.drop.count.should == 1
+    n.modifier.should == '+(2*10)'
+    
     n = Rollables::DieNotation.new("3d8h+(2*10)")
     n.should be_an_instance_of(Rollables::DieNotation)
     n.dice.should == 3
     n.faces.length.should == 8
-    n.drop.should == 'h'
+    n.drop.type.should == 'h'
+    n.drop.count.should == 1
     n.modifier.should == '+(2*10)'
   end
 
@@ -115,22 +131,12 @@ describe Rollables::DieNotation do
     n.modifier.should == '+10'
   end
 
-  it "should accept a string formatted with 'dYSM'" do
-    n = Rollables::DieNotation.new("d8h+(2*10)")
-    n.should be_an_instance_of(Rollables::DieNotation)
-    n.dice.should == 1
-    n.faces.length.should == 8
-    n.drop.should == 'h'
-    n.modifier.should == '+(2*10)'
+  it "should not accept a string formatted with 'dYSM'" do
+    expect { Rollables::DieNotation.new("d8h+(2*10)") }.to raise_exception
   end
 
   it "should accept a string formatted with 'dYS'" do
-    n = Rollables::DieNotation.new("d8h")
-    n.should be_an_instance_of(Rollables::DieNotation)
-    n.dice.should == 1
-    n.faces.length.should == 8
-    n.drop.should == 'h'
-    n.modifier.should be_nil
+    expect { Rollables::DieNotation.new("d8h") }.to raise_exception
   end
 
   it "should accept a string formatted with 'dYM'" do
@@ -142,22 +148,12 @@ describe Rollables::DieNotation do
     n.modifier.should == '+(2*10)'
   end
 
-  it "should accept a string formatted with 'YSM'" do
-    n = Rollables::DieNotation.new("8h+(2*10)")
-    n.should be_an_instance_of(Rollables::DieNotation)
-    n.dice.should == 1
-    n.faces.length.should == 8
-    n.drop.should == 'h'
-    n.modifier.should == '+(2*10)'
+  it "should not accept a string formatted with 'YSM'" do
+    expect { Rollables::DieNotation.new("8h+(2*10)") }.to raise_exception
   end
 
-  it "should accept a string formatted with 'YS'" do
-    n = Rollables::DieNotation.new("8l")
-    n.should be_an_instance_of(Rollables::DieNotation)
-    n.dice.should == 1
-    n.faces.length.should == 8
-    n.drop.should == 'l'
-    n.modifier.should be_nil
+  it "should not accept a string formatted with 'YS'" do
+    expect { Rollables::DieNotation.new("8l") }.to raise_exception
   end
 
   it "should not accept invalid notation strings" do
@@ -168,6 +164,11 @@ describe Rollables::DieNotation do
     expect { Rollables::DieNotation.new("h") }.to raise_exception
     expect { Rollables::DieNotation.new("2dl") }.to raise_exception
     expect { Rollables::DieNotation.new("1d+20") }.to raise_exception
+  end
+
+  it "should not allow more than (num_dice-1) to be dropped" do
+    expect { Rollables::DieNotation.new("2d6l2") }.to raise_exception
+    expect { Rollables::DieNotation.new("4d8l5+10") }.to raise_exception
   end
 
   it "should return a new dice object from #create" do
@@ -183,6 +184,15 @@ describe Rollables::DieNotation do
     Rollables::DieNotation.new(["3",4,2,6,"1","5"]).common?.should be_true
     Rollables::DieNotation.new(:d12).common?.should be_false
     Rollables::DieNotation.new(1..8).common?.should be_false
+  end
+
+  it "should return the correct value from drop?" do
+    Rollables::DieNotation.new("3d6l").drop?.should be_true
+    Rollables::DieNotation.new("4d8h2").drop?.should be_true
+    Rollables::DieNotation.new("6d12l3+(10*10)").drop?.should be_true
+    Rollables::DieNotation.new(8).drop?.should be_false
+    Rollables::DieNotation.new(:d12).drop?.should be_false
+    Rollables::DieNotation.new("2d6+10").drop?.should be_false
   end
   
   it "should be considered numeric if all face values are integers" do
@@ -261,7 +271,9 @@ describe Rollables::DieNotation do
   it "should return a properly formatted string from to_s" do
     Rollables::DieNotation.new(6).to_s.should == "1d6"
     Rollables::DieNotation.new("3d8+10").to_s.should == "3d8+10"
-    Rollables::DieNotation.new("d6l").to_s.should == "1d6l"
+    Rollables::DieNotation.new("2d8h+10").to_s.should == "2d8h+10"
+    Rollables::DieNotation.new("5d12l2+5").to_s.should == "5d12l2+5"
+    Rollables::DieNotation.new("d6").to_s.should == "1d6"
     Rollables::DieNotation.new(8..10).to_s.should == "1d3(8,9,10)"
     Rollables::DieNotation.new(["a","b","c"]).to_s.should == "1d3(a,b,c)"
   end
@@ -275,7 +287,13 @@ describe Rollables::DieNotation do
     n.modifier.should == '+10'
   end
 
-  it "should instantiate a new object from #parse" do
+  it "should convert a single notation string to a new object with #parse" do
     Rollables::DieNotation.parse(6).should be_an_instance_of(Rollables::DieNotation)
+    Rollables::DieNotation.parse("1d6+5").should be_an_instance_of(Rollables::DieNotation)
+  end
+
+  it "should convert multiple notation strings to an array of new objects with #parse" do
+    Rollables::DieNotation.parse("6+10 2d8").should be_a(Array)
+    Rollables::DieNotation.parse("1d8 1d12 1d6").should be_a(Array)
   end
 end

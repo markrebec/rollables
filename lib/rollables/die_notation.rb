@@ -12,11 +12,19 @@ module Rollables
     end
 
     def self.parse(notation)
-      self.new(notation)
+      if notation.stringy? && notation.to_s.match(/\s/)
+        notation.to_s.split(/\s/).map { |n| self.new(n) }
+      else
+        self.new(notation)
+      end
     end
 
     def common?
       simple? && high == 6
+    end
+
+    def drop?
+      !@drop.nil?
     end
 
     def high
@@ -99,12 +107,41 @@ module Rollables
     end
 
     def parse_string(notation)
-      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)(l||h)?([0-9+\-*\/\(\)]*)?\Z/i)
+      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)((l||h)?(\d*))?([0-9+\-*\/\(\)]*)?\Z/i)
       raise "Invalid DieNotation string" if matches.nil?
       @dice = matches[2].to_i unless matches[2].nil? || matches[2].empty?
       @faces = matches[3].to_i.times.map { |face| face+1 }
-      @drop = matches[4].downcase unless matches[4].nil? || matches[4].empty?
-      @modifier = matches[5] unless matches[5].nil? || matches[5].empty?
+      @drop = Drop.new(matches[5], matches[6])
+      @modifier = matches[7] unless matches[7].nil? || matches[7].empty?
+      raise "Cannot drop #{@drop.count} dice from #{@dice} dice" if !@drop.nil? && @drop.count >= @dice
+    end
+
+    class Drop
+      attr_accessor :count, :type
+
+      def self.new(type, count=nil)
+        return nil if type.nil? || type.to_s.empty?
+        super
+      end
+
+      def to_i
+        @count
+      end
+
+      def to_s
+        "#{@type}#{@count if @count > 1}"
+      end
+
+      protected
+
+      def initialize(type, count=nil)
+        @type = type.downcase
+        @count = (count.nil? || count.to_i.zero?) ? 1 : count.to_i
+      end
+    end
+
+    class Modifier
     end
   end
+
 end
