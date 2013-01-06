@@ -246,6 +246,13 @@ describe Rollables::DieNotation do
     n.modifier.should be_nil
   end
 
+  it "should be considered singular if it describes only one die" do
+    Rollables::DieNotation.new("3d8l+10").singular?.should be_false
+    Rollables::DieNotation.new("2d6").singular?.should be_false
+    Rollables::DieNotation.new(12).singular?.should be_true
+    Rollables::DieNotation.new("1d12").singular?.should be_true
+  end
+
   it "should return a new dice object from to_d" do
     Rollables::DieNotation.new("3d8").to_d.should be_an_instance_of(Rollables::Dice)
     Rollables::DieNotation.new(8).to_d.should be_an_instance_of(Rollables::Die)

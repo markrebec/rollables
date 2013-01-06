@@ -67,6 +67,10 @@ module Rollables
       self.class.new("1d#{@faces.length}")
     end
 
+    def singular?
+      @dice == 1
+    end
+
     def to_d
       if @dice > 1
         Dice.new(self.to_s.split(/\s/))
