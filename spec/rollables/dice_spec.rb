@@ -136,9 +136,9 @@ describe Rollables::Dice do
   end
   
   it "should return a properly formatted string from to_s" do
-    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6,1d12"
+    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6 1d12"
     Rollables::Dice.new(1..6, "1d6").to_s.should == "2d6"
-    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8,2d(a,b,c)"
+    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8 2d3(a,b,c)"
   end
   
   it "should be able to be rolled" do
@@ -163,9 +163,9 @@ describe Rollables::DiceRoll do
     [Rollables::Dice.new(:d8, Rollables::Die.new([1,4,3,5,2])), Rollables::Dice.new(Rollables::Die.new(["a","b","c"]), 6), Rollables::Dice.new(1..12, Rollables::Die.new([2,5,1,9,8]))].each do |dice|
       roll = dice.roll
       if (dice.numeric?)
-        roll.to_s.should == "#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")} = #{roll.value.sum}"
+        roll.to_s.should == "(#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")}) = (#{roll.value.join("+")} = #{roll.value.sum})"
       else
-        roll.to_s.should == "#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")} = (#{roll.value.join(",")})"
+        roll.to_s.should == "(#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")}) = (#{roll.value.join(",")})"
       end
     end
   end

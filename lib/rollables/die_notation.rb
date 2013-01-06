@@ -1,6 +1,6 @@
 module Rollables
   class DieNotation
-    attr_accessor :dice, :drop, :faces, :modifier
+    attr_accessor :dice, :faces
     attr_reader :drop, :modifier
 
     def self.create(notation)
@@ -14,7 +14,7 @@ module Rollables
 
     def self.parse(notation)
       if notation.stringy? && notation.to_s.match(/\s/)
-        notation.to_s.split(/\s/).map { |n| self.new(n) }
+        DieNotationArray.new(notation.to_s.split(/\s/).map { |n| self.new(n) })
       else
         self.new(notation)
       end
@@ -22,10 +22,6 @@ module Rollables
 
     def common?
       simple? && high == 6
-    end
-
-    def drop=(dropstr)
-      @drop = Drop.new(dropstr)
     end
 
     def drop?
@@ -40,6 +36,19 @@ module Rollables
       numeric? ? @faces.sort.first : @faces.first
     end
     
+    def merge(notation)
+      notation = [notation] unless notation.is_a?(Array)
+      notation.each do |n|
+        @dice += n.dice
+        (drop? ? @drop.count += n.drop.count : @drop = n.drop.dup) if n.drop?
+      end
+      self
+    end
+
+    def modifier?
+      !@modifier.nil?
+    end
+
     def modifier=(modstr)
       @modifier = Modifier.new(modstr)
     end
@@ -97,7 +106,7 @@ module Rollables
     end
 
     def to_s
-      @faces.length > 0 ? "#{@dice}d#{@faces.length}#{@drop}#{@modifier}#{"(#{@faces.join(",")})" unless simple?}" : ""
+      @faces.length > 0 ? "#{@dice}d#{@faces.length}#{"(#{@faces.join(",")})" unless simple?}#{@drop}#{@modifier}" : ""
     end
 
     protected
@@ -105,6 +114,11 @@ module Rollables
     def initialize(notation=nil)
       reset
       parse notation
+    end
+
+    def initialize_copy(other)
+      @drop = other.drop.dup if other.drop?
+      @modifier = other.modifier.dup if other.modifier?
     end
 
     def parse_array(notation)
@@ -116,7 +130,7 @@ module Rollables
     end
 
     def parse_string(notation)
-      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)((l||h)?(\d*))?([+\-*\/][0-9+\-*\/\(\)]*)?\Z/i)
+      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)((l||h)?(\d*))?([+\-\*\/][0-9+\-\*\/\(\)]*)?\Z/i)
       raise "Invalid DieNotation string" if matches.nil?
       @dice = matches[2].to_i unless matches[2].nil? || matches[2].empty?
       @faces = matches[3].to_i.times.map { |face| face+1 }
@@ -126,7 +140,8 @@ module Rollables
     end
 
     class Drop
-      attr_reader :count, :type
+      attr_accessor :count
+      attr_reader :type
 
       def self.new(type, count=nil)
         return nil if type.nil? || type.to_s.empty?
@@ -168,5 +183,63 @@ module Rollables
       end
     end
   end
+  
+  class DieNotationArray < Array
+    def method_missing(meth, *args, &block)
+      if length > 0
+        if meth.to_s[-1] == "?"
+          return all? { |notation| notation.send(meth, *args, &block) }
+        else
+          return map { |notation| notation.send(meth, *args, &block) }
+        end
+      end
 
+      super
+    end
+
+    def reduce
+      reduced = self.class.new
+      each do |notation|
+        if notation.is_a?(self.class)
+          reduced << notation.reduce
+        elsif notation.modifier?
+          reduced << notation.dup
+        elsif reduced.reduce_include?(notation)
+          reduced[reduced.reduce_index(notation)].merge(notation)
+        else
+          reduced << notation.dup
+        end
+      end
+      reduced
+    end
+
+    def reduce!
+      reduced = reduce
+      clear
+      reduced.each { |notation| self << notation }
+      self
+    end
+    
+    def reduce_include?(notation)
+      map { |n| reduce_compare(n, notation) }.include?(true)
+    end
+    
+    def reduce_index(notation)
+      each { |n| return index(n) if reduce_compare(n, notation) }
+    end
+    
+    def to_s
+      join(" ")
+    end
+
+    protected
+
+    def reduce_compare(n1, n2)
+      !n1.is_a?(self.class) &&
+      !n2.is_a?(self.class) &&
+      n2.modifier.nil? && 
+      (n1.faces.sort == n2.faces.sort) &&
+      ((n1.drop.nil? && n2.drop.nil?) || (n1.drop.type == n2.drop.type))
+    end
+  end
 end

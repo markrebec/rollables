@@ -176,8 +176,8 @@ describe Rollables::Die do
     Rollables::Die.new(20).to_s.should == "1d20"
     Rollables::Die.new(:d6).to_s.should == "1d6"
     Rollables::Die.new(["1","2","3"]).to_s.should == "1d3"
-    Rollables::Die.new(2..4).to_s.should == "1d(2,3,4)"
-    Rollables::Die.new(["x","y","z"]).to_s.should == "1d(x,y,z)"
+    Rollables::Die.new(2..4).to_s.should == "1d3(2,3,4)"
+    Rollables::Die.new(["a","b","c","x","y","z"]).to_s.should == "1d6(a,b,c,x,y,z)"
   end
 end
 
@@ -209,7 +209,7 @@ describe Rollables::DieRoll do
     [Rollables::Die.new(6), Rollables::Die.new(["a","b","c","hello"])].each do |die|
       20.times do
         roll = die.roll
-        roll.to_s.should == roll.value.to_s
+        roll.to_s.should == "#{roll.die.to_s}=#{roll.result.to_s}"
       end
     end
   end
@@ -219,7 +219,7 @@ describe Rollables::DieRolls do
   it "should return a properly formatted string from to_s" do
     [Rollables::Die.new(6), Rollables::Die.new(["z","y","x"])].each do |die|
       5.times { die.roll }
-      die.rolls.to_s.should == die.rolls.collect { |roll| roll.value }.join(",")
+      die.rolls.to_s.should == die.rolls.collect { |roll| roll.to_s }.join(",")
     end
   end
 end

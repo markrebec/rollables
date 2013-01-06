@@ -1,6 +1,5 @@
 module Rollables
   class Dice < Array
-    # TODO allow nested Dice (not just Die)
     attr_reader :rolls
 
     def add_dice(dice)
@@ -13,6 +12,10 @@ module Rollables
       all? { |die| die.common? }
     end
 
+    def has_nested?
+      all? { |die| die.is_a?(Dice) }
+    end
+
     def high
       numeric? ? highs.sum : highs
     end
@@ -21,17 +24,16 @@ module Rollables
       collect &:high
     end
 
-    def inspect
-      notation_string
-    end
-    alias_method :to_s, :inspect
-
     def low
       numeric? ? lows.sum : lows
     end
 
     def lows
       collect &:low
+    end
+
+    def notation
+      return DieNotationArray.new(map { |die| die.notation })
     end
 
     def numeric?
@@ -52,6 +54,10 @@ module Rollables
       all? { |die| die.simple? }
     end
 
+    def to_s
+      notation.flatten.reduce.to_s
+    end
+
     protected
 
     def assign_dice(*dice)
@@ -68,33 +74,19 @@ module Rollables
       @rolls = DiceRolls.new
     end
 
-    def notation_string
-      combined = {}
-      each do |die|
-        face_key = (die.simple?) ? "d#{die.length}" : "d(#{die.join(",")})"
-        combined[face_key] = 0 unless combined.has_key?(face_key)
-        combined[face_key] += 1
-      end
-      combined.collect { |notation,die_count| "#{die_count}#{notation}" }.join(",")
-    end
-
     def parse_notation(notation)
-      # TODO refactor this once we support dice within dice
-      if notation.is_a?(DieNotation)
-        notation.dice.times { assign_die(Die.new(notation.singular)) }
-        # TODO add drop/modifier to collection?
-      else
-        if notation.stringy? && notation.to_s.match(/\s/)
-          notation.split(/\s+/).each do |n|
-            nnotation = DieNotation.new(n)
-            nnotation.dice.times { assign_die(Die.new(nnotation.singular)) }
-            # TODO add drop/modifier to collection?
-          end
-        else
-          nnotation = DieNotation.new(notation)
-          nnotation.dice.times { assign_die(Die.new(nnotation.singular)) }
+      if notation.stringy? && notation.to_s.match(/\s/)
+        dice = self.class.new
+        notation.split(/\s+/).each do |n|
+          nnotation = DieNotation.new(n)
+          nnotation.dice.times { dice.add_die(Die.new(nnotation.singular)) }
           # TODO add drop/modifier to collection?
         end
+        add_dice dice
+      else
+        notation = DieNotation.new(notation) unless notation.is_a?(DieNotation)
+        notation.dice.times { assign_die(Die.new(notation.singular)) }
+        # TODO add drop/modifier to collection?
       end
     end
   end
@@ -105,16 +97,17 @@ module Rollables
 
     def result
       # TODO add flag to control whether modifier block is passed through or added at the end
-      @modifier.nil? ? @results.collect(&:value) : @modifier.call(@results.collect(&:value))
+      @modifier.nil? ? @results.collect(&:result) : @modifier.call(@results.collect(&:result))
     end
     alias_method :value, :result
+    alias_method :inspect, :result
 
     def to_s
       # TODO rework this so it doesn't require DieRoll to have a copy of Die
       if @dice.numeric?
-        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.result.to_s}" }.join(" + ")} = #{result.sum}"
+        "(#{@results.collect { |roll| roll.to_s }.join(" + ")}) = (#{result.join("+")} = #{result.flatten.sum})"
       else
-        "#{@results.collect { |roll| "#{roll.die.to_s}=#{roll.result.to_s}" }.join(" + ")} = (#{result.join(",")})"
+        "(#{@results.collect { |roll| roll.to_s }.join(" + ")}) = (#{result.join(",")})"
       end
     end
 

@@ -10,11 +10,6 @@ module Rollables
       numeric? ? sort.last : last
     end
 
-    def inspect
-      simple? ? @notation.to_s : "1d(#{join(",")})"
-    end
-    alias_method :to_s, :inspect
-
     def low
       numeric? ? sort.first : first
     end
@@ -34,6 +29,11 @@ module Rollables
   
     def simple?
       sequential? && low == 1
+    end
+
+    def to_s
+      #simple? ? @notation.to_s : "1d(#{join(",")})"
+      @notation.to_s
     end
     
     protected
@@ -80,9 +80,10 @@ module Rollables
       @modifier.nil? ? @result : @modifier.call(@result)
     end
     alias_method :value, :result
+    alias_method :inspect, :result
     
     def to_s
-      result.to_s
+      "#{die.to_s}=#{result.to_s}"
     end
 
     protected
