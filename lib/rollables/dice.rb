@@ -85,7 +85,7 @@ module Rollables
         # TODO add drop/modifier to collection?
       else
         if notation.stringy? && notation.to_s.match(/\s/)
-          notation.split(/\s*/).each do |n|
+          notation.split(/\s+/).each do |n|
             nnotation = DieNotation.new(n)
             nnotation.dice.times { assign_die(Die.new(nnotation.singular)) }
             # TODO add drop/modifier to collection?

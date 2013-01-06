@@ -1,11 +1,11 @@
 module Rollables
   class DieNotation
-    attr_reader :drop, :modifier
     attr_accessor :dice, :drop, :faces, :modifier
+    attr_reader :drop, :modifier
 
     def self.create(notation)
       if notation.stringy? && notation.to_s.match(/\s/)
-        Dice.new(notation.split(/\s/))
+        Dice.new(notation)
       else
         notation = self.new(notation)
         (notation.dice > 1) ? Dice.new(notation) : Die.new(notation)
@@ -90,7 +90,7 @@ module Rollables
 
     def to_d
       if @dice > 1
-        Dice.new(self.to_s.split(/\s/))
+        Dice.new(self)
       else
         Die.new(self)
       end
