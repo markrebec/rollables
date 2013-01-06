@@ -21,6 +21,11 @@ module Rollables
       collect &:high
     end
 
+    def inspect
+      notation_string
+    end
+    alias_method :to_s, :inspect
+
     def low
       numeric? ? lows.sum : lows
     end
@@ -45,10 +50,6 @@ module Rollables
 
     def simple?
       all? { |die| die.simple? }
-    end
-
-    def to_s
-      notation_string
     end
 
     protected
