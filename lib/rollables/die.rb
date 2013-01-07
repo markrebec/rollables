@@ -1,6 +1,6 @@
 module Rollables
   class Die < Array
-    attr_reader :rolls, :notation
+    attr_reader :drop, :modifier, :notation, :rolls
     
     def common?
       simple? && high == 6
@@ -43,45 +43,12 @@ module Rollables
       raise "Cannot create single Die from '#{notation}'" if @notation.dice > 1
       raise "Cannot create Die with fewer than 2 faces" if @notation.faces.length < 2
       super @notation.faces.map { |face| DieFace.new(face) }
+      @drop = 
       @rolls = DieRolls.new
     end
 
     def initialize_notation(notation)
       @notation = notation.is_a?(Notations::Die) ? notation : Notations::Die.new(notation)
-    end
-  end
-
-  class DieRoll
-    attr_accessor :modifier
-    attr_reader :die, :timestamp
-   
-    def result
-      @modifier.nil? ? @result : @modifier.call(@result)
-    end
-    alias_method :value, :result
-    alias_method :inspect, :result
-    
-    def to_s
-      "#{die.to_s}=#{result.to_s}"
-    end
-
-    protected
-
-    def initialize(die, &block)
-      @die = die
-      @modifier = block if block_given?
-      roll
-    end
-
-    def roll
-      @result = @die.sample
-      @timestamp = Time.now
-    end
-  end
-
-  class DieRolls < Array
-    def to_s
-      join(",")
     end
   end
 end
