@@ -12,11 +12,16 @@ module Rollables
       end
     end
 
+    def self.new(notation)
+      return notation if notation.is_a?(self.class) || notation.is_a?(DieNotationArray)
+      super
+    end
+
     def self.parse(notation)
       if notation.is_a?(self) || notation.is_a?(DieNotationArray)
-        return notation
+        notation
       elsif notation.is_a?(Array)
-        notation.map { |n| parse(n) }
+        DieNotationArray.new(notation.map { |n| parse(n) })
       elsif notation.stringy? && notation.to_s.match(/\s/)
         DieNotationArray.new(notation.to_s.split(/\s/).map { |n| new(n) })
       else
@@ -34,6 +39,10 @@ module Rollables
 
     def high
       numeric? ? @faces.sort.last : @faces.last
+    end
+
+    def is_die_notation?
+      true
     end
 
     def low
@@ -73,7 +82,7 @@ module Rollables
       else
         raise "Unsupported notation type '#{notation.class.name}'"
       end
-      raise "Invalid DieNotation string" unless @faces.length > 1
+      raise "Invalid DieNotation string #{notation}" unless @faces.length > 1
       self
     end
 
@@ -135,7 +144,7 @@ module Rollables
 
     def parse_string(notation)
       matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)((l||h)?(\d*))?([+\-\*\/][0-9+\-\*\/\(\)]*)?\Z/i)
-      raise "Invalid DieNotation string" if matches.nil?
+      raise "Invalid DieNotation string #{notation}" if matches.nil?
       @dice = matches[2].to_i unless matches[2].nil? || matches[2].empty?
       @faces = matches[3].to_i.times.map { |face| face+1 }
       @drop = Drop.new(matches[5], matches[6])
@@ -197,6 +206,10 @@ module Rollables
       end
     end
 
+    def is_die_notation?
+      true
+    end
+
     def method_missing(meth, *args, &block)
       if length > 0
         if meth.to_s[-1] == "?"
@@ -239,6 +252,10 @@ module Rollables
       each { |n| return index(n) if reduce_compare(n, notation) }
     end
     
+    def to_d
+      Dice.new(self)
+    end
+
     def to_s
       join(" ")
     end

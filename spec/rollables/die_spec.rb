@@ -46,6 +46,7 @@ describe Rollables::Die do
   
   it "should not allow instantiation with greater than 1 die" do
     expect { die = Rollables::Die.new("2d20") }.to raise_exception
+    expect { die = Rollables::Die.new("20 6") }.to raise_exception
   end
 
   it "should not allow instantiation with an invalid string" do

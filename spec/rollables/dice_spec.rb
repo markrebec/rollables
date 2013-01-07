@@ -55,8 +55,8 @@ describe Rollables::Dice do
     dice[2].length.should == 6
   end
   
-  it "should allow instantiation of multiple dice with arrays" do
-    dice = Rollables::Dice.new([20, 12, 6])
+  it "should allow instantiation of multiple dice with arrays of dice" do
+    dice = Rollables::Dice.new([Rollables::Die.new(20), Rollables::Die.new(12), Rollables::Die.new(6)])
     dice.should be_an_instance_of(Rollables::Dice)
     dice[0].length.should == 20
     dice[1].length.should == 12
@@ -89,12 +89,12 @@ describe Rollables::Dice do
   end
 
   it "should allow adding multiple dice" do
-    Rollables::Dice.new.add_dice([:d6, "2d8"]).length.should == 3
-    Rollables::Dice.new(20).add_dice([:d6, "2d8"]).length.should == 4
+    Rollables::Dice.new.add_dice(:d6, "2d8").length.should == 3
+    Rollables::Dice.new(20).add_dice(:d6, "2d8").length.should == 4
   end
 
   it "should allow chaining the addition of dice" do
-    Rollables::Dice.new.add_dice([6, 12]).add_die(:d8).add_dice("2d20").length.should == 5
+    Rollables::Dice.new.add_dice(6, 12).add_die(:d8).add_dice("2d20").length.should == 5
   end
 
   it "should be numeric if all die have all numeric faces" do

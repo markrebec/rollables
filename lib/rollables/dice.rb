@@ -2,8 +2,8 @@ module Rollables
   class Dice < Array
     attr_reader :rolls
 
-    def add_dice(dice)
-      assign_dice(dice)
+    def add_dice(*dice)
+      assign_dice(*dice)
       self
     end
     alias_method :add_die, :add_dice
@@ -61,36 +61,41 @@ module Rollables
     protected
 
     def assign_dice(*dice)
-      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die) #&& !dice.is_a?(self.class)
-      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die) && !die.is_a?(self.class)) ? die.each { |d| assign_die(d) } : assign_die(die) }
-    end
-
-    def assign_die(die)
-      (die.is_a?(Die) || die.is_a?(self.class)) ? self << die : assign_notation(die)
-    end
-
-    def assign_notation(notation)
-      if notation.stringy? && notation.to_s.match(/\s/)
-        dice = self.class.new
-        notation.split(/\s+/).each do |n|
-          dnotation = DieNotation.new(n)
-          dnotation.dice.times { dice.add_dice(Die.new(dnotation.singular)) }
-          # TODO add drop/modifier
-        end
-        self << dice
-      else
-        notation = DieNotation.new(notation) unless notation.is_a?(DieNotation)
-        if notation.drop? || notation.modifier?
-          dice = self.class.new
-          notation.dice.times { dice.add_dice(Die.new(notation.singular)) }
-          # TODO add drop/modifier
-          self << dice
-        elsif notation.dice > 1
-          notation.dice.times { self << Die.new(notation.singular) }
+      dice.each do |die|
+        if die.is_a?(self.class) || die.is_a?(Die)
+          self << die
+        elsif die.is_a?(DieNotation)
+          assign_die_notation(die)
+        elsif die.is_a?(DieNotationArray)
+          assign_die_notation_array(die)
+        elsif die.is_a?(Array) && die.all? { |d| d.is_a?(Die) || d.is_a?(Dice) }
+          die.each { |d| self << d }
         else
-          self << Die.new(notation)
+          notation = DieNotation.parse(die)
+          if notation.is_a?(DieNotation)
+            assign_die_notation(notation)
+          else
+            assign_die_notation_array(notation)
+          end
         end
       end
+    end
+    
+    def assign_die_notation(notation)
+      if notation.drop? || notation.modifier?
+        self << ((notation.dice > 1) ? self.class.new(notation.dice.times.map { Die.new(notation.singular) }) : Die.new(notation))
+      else
+        notation.dice > 1 ? notation.dice.times.map { self << Die.new(notation.singular) } : self << Die.new(notation)
+      end
+    end
+    
+    def assign_die_notation_array(notation_array)
+      dice = self.class.new
+      notation_array.each do |notation|
+        dice.add_dice(notation)
+      end
+      self << dice
+      #self << self.class.new(notation_array.map { |notation| (notation.is_a?(DieNotation)) ? (notation.dice > 1 ? self.class.new(notation.dice.times.map { |n| Die.new(n) }) : Die.new(notation)) : self.class.new(notation) })
     end
 
     def initialize(*dice)
