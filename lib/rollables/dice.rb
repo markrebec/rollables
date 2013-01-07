@@ -33,7 +33,7 @@ module Rollables
     end
 
     def notation
-      return DieNotationArray.new(map { |die| die.notation })
+      return Notations::Dice.new(map { |die| die.notation })
     end
 
     def numeric?
@@ -64,14 +64,14 @@ module Rollables
       dice.each do |die|
         if die.is_a?(self.class) || die.is_a?(Die)
           self << die
-        elsif die.is_a?(DieNotation)
+        elsif die.is_a?(Notations::Die)
           assign_die_notation(die)
-        elsif die.is_a?(DieNotationArray)
+        elsif die.is_a?(Notations::Dice)
           assign_die_notation_array(die)
         elsif die.is_a?(Array) && die.all? { |d| d.is_a?(Die) || d.is_a?(Dice) }
           die.each { |d| self << d }
         else
-          assign_dice(DieNotation.parse(die))
+          assign_dice(Notations::Die.parse(die))
         end
       end
     end
@@ -90,7 +90,7 @@ module Rollables
         dice.add_dice(notation)
       end
       self << dice
-      #self << self.class.new(notation_array.map { |notation| (notation.is_a?(DieNotation)) ? (notation.dice > 1 ? self.class.new(notation.dice.times.map { |n| Die.new(n) }) : Die.new(notation)) : self.class.new(notation) })
+      #self << self.class.new(notation_array.map { |notation| (notation.is_a?(Notations::Die)) ? (notation.dice > 1 ? self.class.new(notation.dice.times.map { |n| Die.new(n) }) : Die.new(notation)) : self.class.new(notation) })
     end
 
     def initialize(*dice)

@@ -1,6 +1,6 @@
 require 'object'
 require 'active_support/core_ext/enumerable'
 require 'rollables/die_face'
-require 'rollables/die_notation'
+require 'rollables/notations'
 require 'rollables/die'
 require 'rollables/dice'

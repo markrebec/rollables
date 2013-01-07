@@ -47,7 +47,7 @@ module Rollables
     end
 
     def initialize_notation(notation)
-      @notation = notation.is_a?(DieNotation) ? notation : DieNotation.new(notation)
+      @notation = notation.is_a?(Notations::Die) ? notation : Notations::Die.new(notation)
     end
   end
 
