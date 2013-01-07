@@ -293,7 +293,7 @@ describe Rollables::DieNotation do
   end
 
   it "should convert multiple notation strings to an array of new objects with #parse" do
-    Rollables::DieNotation.parse("6+10 2d8").should be_a(Array)
-    Rollables::DieNotation.parse("1d8 1d12 1d6").should be_a(Array)
+    Rollables::DieNotation.parse("6+10 2d8").should be_a(Rollables::DieNotationArray)
+    Rollables::DieNotation.parse("1d8 1d12 1d6").should be_a(Rollables::DieNotationArray)
   end
 end

@@ -71,12 +71,7 @@ module Rollables
         elsif die.is_a?(Array) && die.all? { |d| d.is_a?(Die) || d.is_a?(Dice) }
           die.each { |d| self << d }
         else
-          notation = DieNotation.parse(die)
-          if notation.is_a?(DieNotation)
-            assign_die_notation(notation)
-          else
-            assign_die_notation_array(notation)
-          end
+          assign_dice(DieNotation.parse(die))
         end
       end
     end

@@ -13,7 +13,7 @@ module Rollables
     end
 
     def self.new(notation)
-      return notation if notation.is_a?(self.class) || notation.is_a?(DieNotationArray)
+      return notation if notation.is_a?(self) || notation.is_a?(DieNotationArray)
       super
     end
 
@@ -135,7 +135,11 @@ module Rollables
     end
 
     def parse_array(notation)
-      @faces = notation.map { |face| (face.stringy? && face.to_s.to_i.to_s == face.to_s) ? face.to_i : face }
+      #if notation.all? { |n| n.is_die_notation? }
+      #  return DieNotationArray.new(notation)
+      #else
+        @faces = notation.map { |face| (face.stringy? && face.to_s.to_i.to_s == face.to_s) ? face.to_i : face }
+      #end
     end
 
     def parse_range(notation)
@@ -199,11 +203,22 @@ module Rollables
   
   class DieNotationArray < Array
     class << self
+      def new(notations=[])
+        notations = [notations] unless notations.is_a?(Array)
+        notations.each { |notation| raise "Can only add Rollables::DieNotation and #{self.name} objects to #{self.name}" unless notation.is_a?(self) || notation.is_a?(DieNotation) }
+        super
+      end
+
       instance_eval do
         [:create, :parse].each do |meth|
           define_method(meth) { |*args,&block| DieNotation.send(meth, *args, &block) }
         end
       end
+    end
+
+    def <<(notation)
+      raise "Can only add Rollables::DieNotation and #{self.class.name} objects to #{self.class.name}" unless notation.is_a?(self.class) || notation.is_a?(DieNotation)
+      super
     end
 
     def is_die_notation?
