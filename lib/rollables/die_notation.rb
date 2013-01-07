@@ -33,6 +33,11 @@ module Rollables
       simple? && high == 6
     end
 
+    def drop=(drop)
+      raise "Cannot coerce #{drop.class.name} into DropNotation" unless drop.is_a?(DropNotation) || drop.nil?
+      @drop = drop
+    end
+
     def drop?
       !@drop.nil?
     end
@@ -58,12 +63,13 @@ module Rollables
       self
     end
 
-    def modifier?
-      !@modifier.nil?
+    def modifier=(modifier)
+      raise "Cannot coerce #{modifier.class.name} into ModifierNotation" unless modifier.is_a?(ModifierNotation) || modifier.nil?
+      @modifier = modifier
     end
 
-    def modifier=(modstr)
-      @modifier = Modifier.new(modstr)
+    def modifier?
+      !@modifier.nil?
     end
 
     def numeric?
@@ -151,57 +157,15 @@ module Rollables
       raise "Invalid DieNotation string #{notation}" if matches.nil?
       @dice = matches[2].to_i unless matches[2].nil? || matches[2].empty?
       @faces = matches[3].to_i.times.map { |face| face+1 }
-      @drop = Drop.new(matches[5], matches[6])
-      @modifier = Modifier.new(matches[7])
+      @drop = DropNotation.new(matches[5], matches[6])
+      @modifier = ModifierNotation.new(matches[7])
       raise "Cannot drop #{@drop.count} dice from #{@dice} dice" if !@drop.nil? && @drop.count >= @dice
-    end
-
-    class Drop
-      attr_accessor :count
-      attr_reader :type
-
-      def self.new(type, count=nil)
-        return nil if type.nil? || type.to_s.empty?
-        super
-      end
-
-      def to_i
-        @count
-      end
-
-      def to_s
-        "#{@type}#{@count if @count > 1}"
-      end
-
-      protected
-
-      def initialize(type, count=nil)
-        @type = type.downcase
-        @count = (count.nil? || count.to_i.zero?) ? 1 : count.to_i
-      end
-    end
-
-    class Modifier
-      attr_reader :raw
-      
-      def self.new(raw)
-        return nil if raw.nil? || raw.to_s.empty?
-        super
-      end
-
-      def to_s
-        @raw.to_s
-      end
-
-      protected
-
-      def initialize(raw)
-        @raw = raw
-      end
     end
   end
   
   class DieNotationArray < Array
+    attr_reader :drop, :modifier
+
     class << self
       def new(notations=[])
         notations = [notations] unless notations.is_a?(Array)
@@ -221,6 +185,15 @@ module Rollables
       super
     end
 
+    def drop=(drop)
+      raise "Cannot coerce #{drop.class.name} into DropNotation" unless drop.is_a?(DropNotation) || drop.nil?
+      @drop = drop
+    end
+
+    def drop?
+      !@drop.nil?
+    end
+
     def is_die_notation?
       true
     end
@@ -236,6 +209,15 @@ module Rollables
       super
     end
 
+    def modifier=(modifier)
+      raise "Cannot coerce #{modifier.class.name} into ModifierNotation" unless modifier.is_a?(ModifierNotation) || modifier.nil?
+      @modifier = modifier
+    end
+
+    def modifier?
+      !@modifier.nil?
+    end
+
     def reduce
       reduced = self.class.new
       each do |notation|
@@ -249,6 +231,8 @@ module Rollables
           reduced << notation.dup
         end
       end
+      reduced.drop = @drop
+      reduced.modifier = @modifier
       reduced
     end
 
@@ -272,7 +256,13 @@ module Rollables
     end
 
     def to_s
-      join(" ")
+      if length > 1 && (modifier? || drop?)
+        "(#{join(" ")})#{@drop.to_s}#{@modifier.to_s}"
+      elsif modifier? || drop?
+        "#{join(" ")}#{@drop.to_s}#{@modifier.to_s}"
+      else
+        join(" ")
+      end
     end
 
     protected
@@ -283,6 +273,50 @@ module Rollables
       n2.modifier.nil? && 
       (n1.faces.sort == n2.faces.sort) &&
       ((n1.drop.nil? && n2.drop.nil?) || (n1.drop.type == n2.drop.type))
+    end
+  end
+
+  class DropNotation
+    attr_accessor :count
+    attr_reader :type
+
+    def self.new(type, count=nil)
+      return nil if type.nil? || type.to_s.empty?
+      super
+    end
+
+    def to_i
+      @count
+    end
+
+    def to_s
+      "#{@type}#{@count if @count > 1}"
+    end
+
+    protected
+
+    def initialize(type, count=nil)
+      @type = type.downcase
+      @count = (count.nil? || count.to_i.zero?) ? 1 : count.to_i
+    end
+  end
+
+  class ModifierNotation
+    attr_reader :raw
+    
+    def self.new(raw)
+      return nil if raw.nil? || raw.to_s.empty?
+      super
+    end
+
+    def to_s
+      @raw.to_s
+    end
+
+    protected
+
+    def initialize(raw)
+      @raw = raw
     end
   end
 end
