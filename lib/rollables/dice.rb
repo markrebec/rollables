@@ -104,7 +104,7 @@ module Rollables
     attr_reader :results, :timestamp
 
     def result
-      @modifier.nil? ? @results.collect(&:result) : @modifier.call(@results.collect(&:result))
+      @modifier.nil? ? @results.map(&:result) : @modifier.call(@results.map(&:result))
     end
     alias_method :value, :result
     alias_method :inspect, :result

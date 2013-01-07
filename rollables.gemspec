@@ -13,5 +13,7 @@ Gem::Specification.new do |s|
   s.test_files  = Dir["spec/**/*"]
   s.homepage    = "http://github.com/markrebec/rollables"
 
+  s.add_dependency "activesupport"
+
   s.add_development_dependency "rspec"
 end
