@@ -68,7 +68,6 @@ module Rollables
     protected
 
     def initialize(die, &block)
-      # TODO pull out the copy of Die once DiceRoll doesn't need it anymore
       @die = die
       @modifier = block if block_given?
       roll

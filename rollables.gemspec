@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.version     = Rollables::VERSION
   s.date        = "2012-01-04"
   s.summary     = "Dice creator for Ruby."
-  s.description = "Dice creator for Ruby with support for complex die notations, sets of dice, drops, explode, roll modifiers and more."
+  s.description = "Dice creator for Ruby with support for complex die notations, nested sets of dice, high/low drops, explode, roll modifiers and more."
   s.authors     = ["Mark Rebec"]
   s.email       = ["mark@markrebec.com"]
   s.files       = Dir["lib/**/*"]

@@ -61,33 +61,41 @@ module Rollables
     protected
 
     def assign_dice(*dice)
-      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die) && !dice.is_a?(Dice)
-      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die) && !die.is_a?(Dice)) ? die.each { |d| assign_die(d) } : assign_die(die) }
+      dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die) #&& !dice.is_a?(self.class)
+      dice.each { |die| (die.is_a?(Array) && !die.is_a?(Die) && !die.is_a?(self.class)) ? die.each { |d| assign_die(d) } : assign_die(die) }
     end
 
     def assign_die(die)
-      (die.is_a?(Die) || die.is_a?(Dice)) ? self << die : parse_notation(die)
+      (die.is_a?(Die) || die.is_a?(self.class)) ? self << die : assign_notation(die)
+    end
+
+    def assign_notation(notation)
+      if notation.stringy? && notation.to_s.match(/\s/)
+        dice = self.class.new
+        notation.split(/\s+/).each do |n|
+          dnotation = DieNotation.new(n)
+          dnotation.dice.times { dice.add_dice(Die.new(dnotation.singular)) }
+          # TODO add drop/modifier
+        end
+        self << dice
+      else
+        notation = DieNotation.new(notation) unless notation.is_a?(DieNotation)
+        if notation.drop? || notation.modifier?
+          dice = self.class.new
+          notation.dice.times { dice.add_dice(Die.new(notation.singular)) }
+          # TODO add drop/modifier
+          self << dice
+        elsif notation.dice > 1
+          notation.dice.times { self << Die.new(notation.singular) }
+        else
+          self << Die.new(notation)
+        end
+      end
     end
 
     def initialize(*dice)
       assign_dice(*dice)
       @rolls = DiceRolls.new
-    end
-
-    def parse_notation(notation)
-      if notation.stringy? && notation.to_s.match(/\s/)
-        dice = self.class.new
-        notation.split(/\s+/).each do |n|
-          nnotation = DieNotation.new(n)
-          nnotation.dice.times { dice.add_die(Die.new(nnotation.singular)) }
-          # TODO add drop/modifier to collection?
-        end
-        add_dice dice
-      else
-        notation = DieNotation.new(notation) unless notation.is_a?(DieNotation)
-        notation.dice.times { assign_die(Die.new(notation.singular)) }
-        # TODO add drop/modifier to collection?
-      end
     end
   end
 
@@ -96,14 +104,12 @@ module Rollables
     attr_reader :results, :timestamp
 
     def result
-      # TODO add flag to control whether modifier block is passed through or added at the end
       @modifier.nil? ? @results.collect(&:result) : @modifier.call(@results.collect(&:result))
     end
     alias_method :value, :result
     alias_method :inspect, :result
 
     def to_s
-      # TODO rework this so it doesn't require DieRoll to have a copy of Die
       if @dice.numeric?
         "(#{@results.collect { |roll| roll.to_s }.join(" + ")}) = (#{result.join("+")} = #{result.flatten.sum})"
       else
@@ -122,7 +128,6 @@ module Rollables
     end
 
     def roll
-      # TODO add flag to control whether modifier block is passed through or added at the end
       @dice.each { |die| @results << die.roll }
       @timestamp = Time.now
     end

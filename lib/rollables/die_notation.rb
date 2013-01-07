@@ -5,18 +5,22 @@ module Rollables
 
     def self.create(notation)
       if notation.stringy? && notation.to_s.match(/\s/)
-        Dice.new(notation)
+        Dice.new(parse(notation))
       else
-        notation = self.new(notation)
+        notation = new(notation)
         (notation.dice > 1) ? Dice.new(notation) : Die.new(notation)
       end
     end
 
     def self.parse(notation)
-      if notation.stringy? && notation.to_s.match(/\s/)
-        DieNotationArray.new(notation.to_s.split(/\s/).map { |n| self.new(n) })
+      if notation.is_a?(self) || notation.is_a?(DieNotationArray)
+        return notation
+      elsif notation.is_a?(Array)
+        notation.map { |n| parse(n) }
+      elsif notation.stringy? && notation.to_s.match(/\s/)
+        DieNotationArray.new(notation.to_s.split(/\s/).map { |n| new(n) })
       else
-        self.new(notation)
+        new(notation)
       end
     end
 
@@ -185,6 +189,14 @@ module Rollables
   end
   
   class DieNotationArray < Array
+    class << self
+      instance_eval do
+        [:create, :parse].each do |meth|
+          define_method(meth) { |*args,&block| DieNotation.send(meth, *args, &block) }
+        end
+      end
+    end
+
     def method_missing(meth, *args, &block)
       if length > 0
         if meth.to_s[-1] == "?"
@@ -193,7 +205,6 @@ module Rollables
           return map { |notation| notation.send(meth, *args, &block) }
         end
       end
-
       super
     end
 

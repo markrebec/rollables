@@ -1,2 +1,8 @@
+# rspec config
 .rspec
+
+# Gemfile.lock
 Gemfile.lock
+
+# vim swap files
+*.swp
