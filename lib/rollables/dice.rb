@@ -1,6 +1,6 @@
 module Rollables
   class Dice < Array
-    attr_reader :rolls
+    attr_reader :drop, :modifier, :rolls
 
     def add_dice(*dice)
       assign_dice(*dice)
@@ -32,6 +32,20 @@ module Rollables
       collect &:low
     end
 
+    def modifier=(modifier)
+      if modifier.is_a?(RollModifier)
+        @modifier = modifier
+      elsif modifier.is_a?(Notations::Modifier)
+        @modifier = RollModifier.new(modifier)
+      else
+        @modifier = RollModifier.new(Notations::Modifier.new(modifier))
+      end
+    end
+
+    def modifier?
+      !@modifier.nil?
+    end
+    
     def notation
       return Notations::Dice.new(map { |die| die.notation })
     end
@@ -42,7 +56,10 @@ module Rollables
 
     def roll(&block)
       raise "A set of Dice must contain at least 1 Die" unless length > 0
-      @rolls << DiceRoll.new(self, &block)
+      modifiers = []
+      modifiers << @modifier if modifier?
+      modifiers << block if block_given?
+      @rolls << DiceRoll.new(self, modifiers)
       @rolls.last
     end
 
@@ -67,7 +84,7 @@ module Rollables
         elsif die.is_a?(Notations::Die)
           assign_die_notation(die)
         elsif die.is_a?(Notations::Dice)
-          assign_die_notation_array(die)
+          assign_dice_notation(die)
         elsif die.is_a?(Array) && die.all? { |d| d.is_a?(Die) || d.is_a?(Dice) }
           die.each { |d| self << d }
         else
@@ -78,19 +95,27 @@ module Rollables
     
     def assign_die_notation(notation)
       if notation.drop? || notation.modifier?
-        self << ((notation.dice > 1) ? self.class.new(notation.dice.times.map { Die.new(notation.singular) }) : Die.new(notation))
+        if (notation.dice > 1) 
+          dice = self.class.new(notation.dice.times.map { Die.new(notation.singular) })
+          dice.modifier = RollModifier.new(notation.modifier.to_s)
+          # TODO add drop
+          self << dice
+        else
+          self << Die.new(notation)
+        end
       else
         notation.dice > 1 ? notation.dice.times.map { self << Die.new(notation.singular) } : self << Die.new(notation)
       end
     end
     
-    def assign_die_notation_array(notation_array)
+    def assign_dice_notation(notation)
       dice = self.class.new
-      notation_array.each do |notation|
-        dice.add_dice(notation)
+      notation.each do |n|
+        dice.add_dice(n)
       end
+      dice.modifier = RollModifier.new(notation.modifier.to_s)
+      # TODO add drop
       self << dice
-      #self << self.class.new(notation_array.map { |notation| (notation.is_a?(Notations::Die)) ? (notation.dice > 1 ? self.class.new(notation.dice.times.map { |n| Die.new(n) }) : Die.new(notation)) : self.class.new(notation) })
     end
 
     def initialize(*dice)

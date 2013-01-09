@@ -148,12 +148,12 @@ describe Rollables::Dice do
   it "should be able to be rolled with a modifier" do
     dice = Rollables::Dice.new(Rollables::Die.new(6), Rollables::Die.new(:d12))
     20.times do
-      roll = dice.roll { |results| results << 10 }
-      roll.result.sum.should be_between(12, 28)
+      roll = dice.roll { |result| result + 10 }
+      roll.result.should be_between(12, 28)
     end
     20.times do
-      roll = dice.roll { |results| results.map { |result| result + 1 } }
-      roll.result.sum.should be_between(4, 20)
+      roll = dice.roll { |result| Rollables::RollModifier.new("+2").call(result) }
+      roll.result.should be_between(4, 20)
     end
   end
 end
@@ -163,9 +163,9 @@ describe Rollables::DiceRoll do
     [Rollables::Dice.new(:d8, Rollables::Die.new([1,4,3,5,2])), Rollables::Dice.new(Rollables::Die.new(["a","b","c"]), 6), Rollables::Dice.new(1..12, Rollables::Die.new([2,5,1,9,8]))].each do |dice|
       roll = dice.roll
       if (dice.numeric?)
-        roll.to_s.should == "(#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")}) = (#{roll.value.join("+")} = #{roll.value.sum})"
+        roll.to_s.should == "(#{roll.results.collect { |r| r.to_s }.join(" + ")}) = (#{roll.results.join("+")} = #{roll.result})"
       else
-        roll.to_s.should == "(#{roll.results.collect { |r| "#{r.die.to_s}=#{r.value.to_s}" }.join(" + ")}) = (#{roll.value.join(",")})"
+        roll.to_s.should == "(#{roll.results.collect { |r| r.to_s }.join(" + ")}) = (#{roll.results.join(",")})"
       end
     end
   end
@@ -173,7 +173,7 @@ describe Rollables::DiceRoll do
   it "should return all the right face values for die rolls" do
     dice = Rollables::Dice.new("3d6")
     roll = dice.roll
-    roll.value.should == roll.results.map(&:value)
+    roll.result.should == roll.results.collect(&:result).sum
   end
 end
 

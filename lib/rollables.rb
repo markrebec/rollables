@@ -6,7 +6,7 @@ require 'rollables/die_face'
 require 'rollables/die_roll'
 require 'rollables/dice'
 require 'rollables/dice_roll'
-
+require 'rollables/roll_modifier'
 require 'rollables/notations'
 
 module Rollables

@@ -194,7 +194,7 @@ describe Rollables::DieRoll do
     [Rollables::Die.new(6), Rollables::Die.new(["a","b","c","hello"])].each do |die|
       20.times do
         roll = die.roll
-        roll.to_s.should == "#{roll.die.to_s}=#{roll.result.to_s}"
+        roll.to_s.should == "#{die.to_s}=#{roll.result.to_s}"
       end
     end
   end

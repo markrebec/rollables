@@ -1,6 +1,6 @@
 module Rollables
   class Die < Array
-    attr_reader :drop, :modifier, :notation, :rolls
+    attr_reader :modifier, :notation, :rolls
     
     def common?
       simple? && high == 6
@@ -13,13 +13,30 @@ module Rollables
     def low
       numeric? ? sort.first : first
     end
+
+    def modifier=(modifier)
+      if modifier.is_a?(RollModifier)
+        @modifier = modifier
+      elsif modifier.is_a?(Notations::Modifier)
+        @modifier = RollModifier.new(modifier)
+      else
+        @modifier = RollModifier.new(Notations::Modifier.new(modifier))
+      end
+    end
+
+    def modifier?
+      !@modifier.nil?
+    end
     
     def numeric?
       all? { |face| face.is_a?(Integer) }
     end
 
     def roll(&block)
-      @rolls << DieRoll.new(self, &block)
+      modifiers = []
+      modifiers << @modifier if modifier?
+      modifiers << block if block_given?
+      @rolls << DieRoll.new(self, modifiers)
       @rolls.last
     end
     
@@ -32,7 +49,6 @@ module Rollables
     end
 
     def to_s
-      #simple? ? @notation.to_s : "1d(#{join(",")})"
       @notation.to_s
     end
     
@@ -43,7 +59,7 @@ module Rollables
       raise "Cannot create single Die from '#{notation}'" if @notation.dice > 1
       raise "Cannot create Die with fewer than 2 faces" if @notation.faces.length < 2
       super @notation.faces.map { |face| DieFace.new(face) }
-      @drop = 
+      @modifier = RollModifier.new(@notation.modifier.to_s)
       @rolls = DieRolls.new
     end
 
