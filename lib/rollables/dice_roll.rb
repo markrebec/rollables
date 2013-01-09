@@ -1,5 +1,5 @@
 module Rollables
-  class DiceRoll
+  class DiceRoll < Array
     attr_accessor :drop
     attr_reader :dice, :modifiers, :timestamp
 
@@ -9,9 +9,9 @@ module Rollables
 
     def result
       if @modifiers.nil? || @modifiers.empty?
-        @dice.numeric? ? @results.collect(&:result).flatten.sum : @results.collect(&:result)
+        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result)
       else
-        modified_result = (@dice.numeric? ? @results.collect(&:result).flatten.sum : @results.collect(&:result))
+        modified_result = (@dice.numeric? ? collect(&:result).flatten.sum : collect(&:result))
         @modifiers.each { |modifier| modified_result = modifier.call(modified_result) }
         modified_result
       end
@@ -21,9 +21,9 @@ module Rollables
 
     def results
       if @modifiers.nil? || @modifiers.empty?
-        @results.collect(&:results)
+        collect(&:results)
       else
-        modified_results = @results.collect(&:results)
+        modified_results = collect(&:results)
         @modifiers.each { |modifier| modified_results << modifier.to_s }
         modified_results
       end
@@ -31,9 +31,9 @@ module Rollables
 
     def to_s
       if @dice.numeric?
-        "(#{@results.collect { |roll| roll.to_s }.join(" + ")}) = (#{@results.collect(&:result).join("+")} = #{@results.collect(&:result).flatten.sum})"
+        "(#{collect { |roll| roll.to_s }.join(" + ")}) = (#{collect(&:result).join("+")} = #{collect(&:result).flatten.sum})"
       else
-        "(#{@results.collect { |roll| roll.to_s }.join(" + ")}) = (#{@results.join(",")})"
+        "(#{collect { |roll| roll.to_s }.join(" + ")}) = (#{join(",")})"
       end
     end
 
@@ -42,13 +42,12 @@ module Rollables
     def initialize(dice, modifiers=[])
       @dice = dice
       @modifiers = modifiers
-      @results = []
       @result = nil
       roll
     end
 
     def roll
-      @dice.each { |die| @results << die.roll }
+      @dice.each { |die| self << die.roll }
       @timestamp = Time.now
     end
   end

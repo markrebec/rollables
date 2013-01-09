@@ -163,9 +163,9 @@ describe Rollables::DiceRoll do
     [Rollables::Dice.new(:d8, Rollables::Die.new([1,4,3,5,2])), Rollables::Dice.new(Rollables::Die.new(["a","b","c"]), 6), Rollables::Dice.new(1..12, Rollables::Die.new([2,5,1,9,8]))].each do |dice|
       roll = dice.roll
       if (dice.numeric?)
-        roll.to_s.should == "(#{roll.results.collect { |r| r.to_s }.join(" + ")}) = (#{roll.results.join("+")} = #{roll.result})"
+        roll.to_s.should == "(#{roll.collect { |r| r.to_s }.join(" + ")}) = (#{roll.collect(&:result).join("+")} = #{roll.result})"
       else
-        roll.to_s.should == "(#{roll.results.collect { |r| r.to_s }.join(" + ")}) = (#{roll.results.join(",")})"
+        roll.to_s.should == "(#{roll.collect { |r| r.to_s }.join(" + ")}) = (#{roll.join(",")})"
       end
     end
   end
@@ -173,7 +173,7 @@ describe Rollables::DiceRoll do
   it "should return all the right face values for die rolls" do
     dice = Rollables::Dice.new("3d6")
     roll = dice.roll
-    roll.result.should == roll.results.collect(&:result).sum
+    roll.result.should == roll.collect(&:result).sum
   end
 end
 
