@@ -1,8 +1,8 @@
 module Rollables
   class DieRoll
     attr_reader :die, :result, :timestamp
-    alias_attribute :results, :result
-    alias_attribute :total, :result
+    alias_method :results, :result
+    alias_method :total, :result
     
     def to_s
       @result.to_s

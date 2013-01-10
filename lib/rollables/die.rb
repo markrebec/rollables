@@ -31,7 +31,7 @@ module Rollables
     end
 
     def notation
-      "1d#{numeric? ? length : "#{length}(#{join(",")})"}"
+      "1d#{simple? ? length : "#{length}(#{join(",")})"}"
     end
 
     def numeric?

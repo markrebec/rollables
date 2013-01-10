@@ -88,13 +88,13 @@ describe Rollables::Dice do
     Rollables::Dice.new(20).add_die(:d6).length.should == 2
   end
 
-  it "should allow adding multiple dice" do
-    Rollables::Dice.new.add_dice(:d6, "2d8").length.should == 3
-    Rollables::Dice.new(20).add_dice(:d6, "2d8").length.should == 4
+  it "should allow adding multiple dice with an array" do
+    Rollables::Dice.new.add_dice([:d6, "2d8"]).length.should == 3
+    Rollables::Dice.new(20).add_dice([:d6, "2d8"]).length.should == 4
   end
 
   it "should allow chaining the addition of dice" do
-    Rollables::Dice.new.add_dice(6, 12).add_die(:d8).add_dice("2d20").length.should == 5
+    Rollables::Dice.new.add_dice([6, 12]).add_die(:d8).add_dice("2d20").length.should == 5
   end
 
   it "should be numeric if all die have all numeric faces" do
@@ -136,9 +136,9 @@ describe Rollables::Dice do
   end
   
   it "should return a properly formatted string from to_s" do
-    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6 1d12"
+    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6, 1d12"
     Rollables::Dice.new(1..6, "1d6").to_s.should == "2d6"
-    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8 2d3(a,b,c)"
+    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8, 2d3(a,b,c)"
   end
   
   it "should be able to be rolled" do
@@ -154,34 +154,6 @@ describe Rollables::Dice do
     20.times do
       roll = dice.roll { |result| Rollables::RollModifier.new("+2").call(result) }
       roll.result.should be_between(4, 20)
-    end
-  end
-end
-
-describe Rollables::DiceRoll do
-  it "should return a properly formatted string from to_s" do
-    [Rollables::Dice.new(:d8, Rollables::Die.new([1,4,3,5,2])), Rollables::Dice.new(Rollables::Die.new(["a","b","c"]), 6), Rollables::Dice.new(1..12, Rollables::Die.new([2,5,1,9,8]))].each do |dice|
-      roll = dice.roll
-      if (dice.numeric?)
-        roll.to_s.should == "(#{roll.collect { |r| r.to_s }.join(" + ")}) = (#{roll.collect(&:result).join("+")} = #{roll.result})"
-      else
-        roll.to_s.should == "(#{roll.collect { |r| r.to_s }.join(" + ")}) = (#{roll.join(",")})"
-      end
-    end
-  end
-  
-  it "should return all the right face values for die rolls" do
-    dice = Rollables::Dice.new("3d6")
-    roll = dice.roll
-    roll.result.should == roll.collect(&:result).sum
-  end
-end
-
-describe Rollables::DiceRolls do
-  it "should return a properly formatted string from to_s" do
-    [Rollables::Dice.new(:d8, Rollables::Die.new([1,4,3,5,2])), Rollables::Dice.new(Rollables::Die.new(["a","b","c"]), 6), Rollables::Dice.new(1..12, Rollables::Die.new([2,5,1,9,8]))].each do |dice|
-      5.times { dice.roll }
-      dice.rolls.to_s.should == dice.rolls.join(", ")
     end
   end
 end

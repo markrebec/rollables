@@ -160,51 +160,15 @@ describe Rollables::Die do
 
   it "should always return a face value within it's parameters when rolled" do
     [Rollables::Die.new(6), Rollables::Die.new(:d12), Rollables::Die.new(["a","b","c"])].each do |die|
-      20.times { die.include?(die.roll.value).should be_true }
+      20.times { die.include?(die.roll.result).should be_true }
     end
   end
   
-  it "should be able to be rolled with a modifier" do
-    [Rollables::Die.new(6), Rollables::Die.new(:d12)].each do |die|
-      20.times { die.include?(die.roll { |result| result + 3 }.result - 3).should be_true }
-    end
-    [Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["hello","goodbye","test"])].each do |die|
-      20.times { die.map { |face| "#{face}x" }.include?(die.roll { |result| "#{result}x" }.result).should be_true }
-    end
-  end
-
   it "should return a properly formatted string from to_s" do
     Rollables::Die.new(20).to_s.should == "1d20"
     Rollables::Die.new(:d6).to_s.should == "1d6"
     Rollables::Die.new(["1","2","3"]).to_s.should == "1d3"
     Rollables::Die.new(2..4).to_s.should == "1d3(2,3,4)"
     Rollables::Die.new(["a","b","c","x","y","z"]).to_s.should == "1d6(a,b,c,x,y,z)"
-  end
-end
-
-describe Rollables::DieRoll do
-  it "should roll on init" do
-    die = Rollables::Die.new(:d6)
-    roll = die.roll
-    roll.value.should_not be_nil
-    roll.timestamp.should_not be_nil
-  end
-
-  it "should return a properly formatted string from to_s" do
-    [Rollables::Die.new(6), Rollables::Die.new(["a","b","c","hello"])].each do |die|
-      20.times do
-        roll = die.roll
-        roll.to_s.should == "#{die.to_s}=#{roll.result.to_s}"
-      end
-    end
-  end
-end
-
-describe Rollables::DieRolls do
-  it "should return a properly formatted string from to_s" do
-    [Rollables::Die.new(6), Rollables::Die.new(["z","y","x"])].each do |die|
-      5.times { die.roll }
-      die.rolls.to_s.should == die.rolls.collect { |roll| roll.to_s }.join(",")
-    end
   end
 end

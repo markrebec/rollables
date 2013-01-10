@@ -2,7 +2,7 @@ module Rollables
   class Dice < Array
     attr_reader :drop, :modifier, :rolls
     
-    def self.new(dice=nil)
+    def self.new(*dice)
       return dice if dice.is_a?(self.class)
       super
     end
@@ -142,10 +142,10 @@ module Rollables
       self << dice
     end
 
-    def initialize(dice)
+    def initialize(*dice)
       dice = [dice] unless dice.is_a?(Array) && !dice.is_a?(Die) && !dice.is_a?(self.class)
       reset
-      add_dice(dice)
+      dice.each { |die| add_dice(die) }
     end
 
     def initialize_copy(other)

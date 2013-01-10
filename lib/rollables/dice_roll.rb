@@ -16,11 +16,11 @@ module Rollables
 
     def result
       if @modifiers.nil? || @modifiers.empty?
-        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result).join(", ")
+        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result).join(",")
       else
         modified_result = (@dice.numeric? ? collect(&:result).flatten.sum : collect(&:result))
         @modifiers.each { |modifier| modified_result = modifier.call(modified_result) }
-        modified_result.join(", ")
+        @dice.numeric? ? modified_result : modified_result.join(",")
       end
     end
     alias_method :total, :result
