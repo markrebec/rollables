@@ -1,42 +1,17 @@
 module Rollables
   class DieRoll
-    attr_reader :die, :modifiers, :timestamp
+    attr_reader :die, :result, :timestamp
+    alias_attribute :results, :result
+    alias_attribute :total, :result
     
-    def modifier=(modifier)
-      @modifiers << RollModifier.new(modifier)
-    end
-
-    def result
-      if @modifiers.nil? || @modifiers.empty?
-        @result
-      else
-        modified_result = @result
-        @modifiers.each { |modifier| modified_result = modifier.call(modified_result) }
-        modified_result
-      end
-    end
-    alias_method :value, :result
-    #alias_method :inspect, :result
-    
-    def results
-      if @modifiers.nil? || @modifiers.empty?
-        @result
-      else
-        modified_result = [@result]
-        @modifiers.each { |modifier| modified_result << modifier.to_s }
-        modified_result
-      end
-    end
-
     def to_s
-      "#{@die.to_s}=#{result.to_s}"
+      @result.to_s
     end
 
     protected
 
-    def initialize(die, modifiers=[])
+    def initialize(die)
       @die = die
-      @modifiers = modifiers
       roll
     end
 

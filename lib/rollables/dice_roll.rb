@@ -1,7 +1,14 @@
 module Rollables
   class DiceRoll < Array
-    attr_accessor :drop
-    attr_reader :dice, :modifiers, :timestamp
+    attr_reader :dice, :drop, :modifiers, :timestamp
+
+    def dropped
+      sort.slice(0,@drop.count)
+    end
+
+    def kept
+      sort.slice(-(length - @drop.count))
+    end
 
     def modifier=(modifier)
       @modifiers << RollModifier.new(modifier)
@@ -9,40 +16,38 @@ module Rollables
 
     def result
       if @modifiers.nil? || @modifiers.empty?
-        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result)
+        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result).join(", ")
       else
         modified_result = (@dice.numeric? ? collect(&:result).flatten.sum : collect(&:result))
         @modifiers.each { |modifier| modified_result = modifier.call(modified_result) }
-        modified_result
+        modified_result.join(", ")
       end
     end
-    alias_method :value, :result
-    #alias_method :inspect, :result
+    alias_method :total, :result
+    alias_method :to_i, :result
 
     def results
       if @modifiers.nil? || @modifiers.empty?
         collect(&:results)
       else
         modified_results = collect(&:results)
-        @modifiers.each { |modifier| modified_results << modifier.to_s }
+        @modifiers.each { |modifier| modified_results << modifier }
         modified_results
       end
     end
+    alias_method :inspect, :results
 
     def to_s
-      if @dice.numeric?
-        "(#{collect { |roll| roll.to_s }.join(" + ")}) = (#{collect(&:result).join("+")} = #{collect(&:result).flatten.sum})"
-      else
-        "(#{collect { |roll| roll.to_s }.join(" + ")}) = (#{join(",")})"
-      end
+      result.to_s
     end
 
     protected
     
-    def initialize(dice, modifiers=[])
+    def initialize(dice, params={})
+      params = {:modifiers => [], :drop => nil}.merge(params)
       @dice = dice
-      @modifiers = modifiers
-      @result = nil
+      @drop = params[:drop]
+      @modifiers = params[:modifiers]
       roll
     end
 
