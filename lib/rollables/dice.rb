@@ -102,9 +102,9 @@ module Rollables
     end
 
     def notation
-      reduce.map do |notation,dice|
-        notation.match(/[lh+\-*\/].*\Z/) ? dice.times.map { notation }.join(", ") : "#{dice}#{notation}"
-      end.join(", ").concat("#{@drop.map(&:to_s).join}#{@modifier.to_s}")
+      notation_string = reduce.map { |notation,dice| notation.match(/[lh+\-*\/].*\Z/) ? dice.times.map { notation }.join(", ") : "#{dice}#{notation}" }.join(" + ")
+      notation_string = "(#{notation_string})" if reduce.length > 1 && (drop? || modifier?)
+      notation_string.concat("#{@drop.map(&:to_s).join}#{@modifier.to_s}")
     end
 
     def numeric?

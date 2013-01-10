@@ -136,9 +136,9 @@ describe Rollables::Dice do
   end
   
   it "should return a properly formatted string from to_s" do
-    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6, 1d12"
+    Rollables::Dice.new(6, :d6, 12).to_s.should == "2d6 + 1d12"
     Rollables::Dice.new(1..6, "1d6").to_s.should == "2d6"
-    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8, 2d3(a,b,c)"
+    Rollables::Dice.new("2d8", Rollables::Die.new(["a","b","c"]), Rollables::Die.new(["a","b","c"])).to_s.should == "2d8 + 2d3(a,b,c)"
   end
   
   it "should be able to be rolled" do
