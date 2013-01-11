@@ -86,7 +86,7 @@ module Rollables
 
     def parse_string(notation)
       raise "Cannot parse empty notation string." if notation.to_s.empty?
-      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)([[lh][\d]*]*)?([+\-\*\/][0-9+\-\*\/\(\)]*)?\Z/i)
+      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)\Z/i)
       raise "Invalid notation string #{notation}." if matches.nil?
       raise "Cannot create single Die from #{notation}." unless matches[2].nil? || matches[2].empty? || matches[2].to_i == 1
       matches[3].to_i.times.map { |face| self << DieFace.new(face+1) }
