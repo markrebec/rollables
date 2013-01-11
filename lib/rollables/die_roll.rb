@@ -11,7 +11,7 @@ module Rollables
     protected
 
     def initialize(die)
-      @die = die
+      @die = die.clone
       roll
     end
 

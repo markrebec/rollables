@@ -62,6 +62,11 @@ module Rollables
       @rolls = DieRolls.new
     end
 
+    def initialize_copy(other)
+      super
+      @rolls = other.rolls.clone
+    end
+
     def parse(notation)
       if notation.stringy?
         parse_string(notation)
