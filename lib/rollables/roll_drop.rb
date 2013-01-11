@@ -12,9 +12,10 @@ module Rollables
 
     protected
 
-    def initialize(type, count=1)
-      @type = type
-      @count = count.to_i > 1 ? count.to_i : 1
+    def initialize(notation)
+      matches = notation.match(/\A(([lh])([\d]*))\Z/i)
+      @type = matches[2]
+      @count = (matches[3].to_i > 1 ? matches[3].to_i : 1)
     end
     
     def initialize_copy(other)

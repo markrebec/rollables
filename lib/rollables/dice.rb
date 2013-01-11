@@ -111,14 +111,9 @@ module Rollables
       all? { |die| die.numeric? }
     end
     
-    def roll(roll_drop=nil, &block)
+    def roll(drop=nil, &block)
       raise "A set of Dice must contain at least 1 Die" unless length > 0
-      roll_params = {:modifiers => [], :drop => []}
-      @drop.each { |drop| roll_params[:drop] << drop } if drop?
-      roll_params[:drop] << roll_drop unless roll_drop.nil?
-      roll_params[:modifiers] << @modifier if modifier?
-      roll_params[:modifiers] << RollModifier.new(block) if block_given?
-      @rolls << DiceRoll.new(self, roll_params)
+      @rolls << DiceRoll.new(self, drop, &block)
       @rolls.last
     end
 
@@ -187,7 +182,7 @@ module Rollables
       dice_count = matches[2].nil? ? 1 : matches[2].to_i
       dice_drop = []
       unless matches[4].nil? || matches[4].empty?
-        matches[4].scan(/(([lh])([\d]*))/i) { |drop| dice_drop << RollDrop.new(drop[1], drop[2]) }
+        matches[4].scan(/(([lh])([\d]*))/i) { |drop| dice_drop << RollDrop.new(drop[0]) }#drop[1], drop[2]) }
       end
       dice_modifier = RollModifier.new(matches[5])
       raise "Cannot drop #{dice_drop.map(&:count).sum} dice from #{dice_count} dice" if !dice_drop.empty? && dice_drop.collect(&:count).sum >= dice_count
