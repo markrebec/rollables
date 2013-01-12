@@ -43,12 +43,15 @@ module Rollables
 
     protected
     
-    def initialize(dice, drop=nil, &block)
+    def initialize(dice, *args, &block)
+      params = {:drop => nil, :modifier => nil}
+      params.merge!(args[0]) if args.length > 0
       @dice = dice.clone
       @drop = @dice.drop
-      @drop << RollDrop.new(drop) unless drop.nil?
+      @drop << RollDrop.new(params[:drop]) unless params[:drop].nil?
       @modifiers = []
       @modifiers << @dice.modifier if @dice.modifier?
+      @modifiers << RollModifier.new(params[:modifier]) unless params[:modifier].nil?
       @modifiers << RollModifier.new(block) if block_given?
       roll
     end

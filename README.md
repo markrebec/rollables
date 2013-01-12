@@ -21,9 +21,10 @@ in your Gemfile.
     # Creating Dice
     
     Rollables::Die.new(6)                                               # => d6
-    Rollables::Die.new(20)                                              # => d20
+    Rollables::Die.new("20")                                            # => d20
     Rollables::Die.new(:d8)                                             # => d8
     Rollables::Die.new("1d12")                                          # => d12
+    Rollables::Die.new("d12")                                           # => d12
     Rollables::Die.new(1..6)                                            # => d6
     Rollables::Die.new(5..10)                                           # => d6(5,6,7,8,9,10)
     Rollables::Die.new(["a","b","c"])                                   # => d3(a,b,c)
@@ -32,14 +33,14 @@ in your Gemfile.
     # Rolling
     
     die = Rollables::Die.new(6)
-    die.roll                                                        # => 3
-    die.roll                                                        # => 1
-    die.roll                                                        # => 5
-    die.roll                                                        # => 1
-    die.roll                                                        # => 6
-    die.rolls                                                       # => [3, 1, 5, 1, 6]
+    die.roll                                                            # => 3
+    die.roll                                                            # => 1
+    die.roll                                                            # => 5
+    die.roll                                                            # => 1
+    die.roll                                                            # => 6
+    die.rolls                                                           # => [3, 1, 5, 1, 6]
 
-### Collection of Dice
+### Multiple Dice
 
     # Creating Dice
 
@@ -53,22 +54,23 @@ in your Gemfile.
     # Rolling
 
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
-    dice.roll                                                       # => 1 + 1 + 12 + 6 = 20
-    dice.roll                                                       # => 1 + 3 + 1 + 5 = 10
-    dice.roll                                                       # => 5 + 6 + 1 + 4 = 16
-    dice.roll                                                       # => 1 + 8 + 1 + 2 = 12
-    dice.rolls                                                      # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
-
-    # Or
+    dice.roll                                                           # => 1 + 1 + 12 + 6 = 20
+    dice.roll                                                           # => 1 + 3 + 1 + 5 = 10
+    dice.roll                                                           # => 5 + 6 + 1 + 4 = 16
+    dice.roll                                                           # => 1 + 8 + 1 + 2 = 12
+    dice.rolls                                                          # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
 
     dice = Rollables::Dice.new("2d6", Rollables::Die(["x","y","z"]))
-    dice.roll                                                       # => 3 + 1 + y = 3,1,y
-    dice.roll                                                       # => 4 + 3 + x = 4,3,x
-    dice.roll                                                       # => 1 + 2 + x = 1,2,x
-    dice.rolls                                                      # => [3 + 1 + y = 3,1,y, 4 + 3 + x = 4,3,x, 1 + 2 + x = 1,2,x]
+    dice.roll                                                           # => 3 + 1 + y = 3,1,y
+    dice.roll                                                           # => 4 + 3 + x = 4,3,x
+    dice.roll                                                           # => 1 + 2 + x = 1,2,x
+    dice.rolls                                                          # => [3 + 1 + y = 3,1,y, 4 + 3 + x = 4,3,x, 1 + 2 + x = 1,2,x]
 
-    # Modifier Blocks
+### Drops
 
+### Modifiers
+
+    # Apply to a Single Roll
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
     dice.roll { |result| result + 10 }                              # => 1 + 1 + 12 + 6 = 30   (adds an extra value of +10 to the result set)
     dice.roll                                                       # => 5 + 6 + 1 + 4 = 16

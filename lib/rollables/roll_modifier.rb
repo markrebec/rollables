@@ -12,7 +12,7 @@ module Rollables
     end
 
     def to_s
-      @modifier.respond_to?(:call) ? @modifier.to_source : @modifier.to_s
+      @modifier.respond_to?(:to_source) ? @modifier.to_source : @modifier.to_s
     end
 
     protected

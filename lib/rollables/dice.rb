@@ -111,9 +111,9 @@ module Rollables
       all? { |die| die.numeric? }
     end
     
-    def roll(drop=nil, &block)
+    def roll(*args, &block)
       raise "A set of Dice must contain at least 1 Die" unless length > 0
-      @rolls << DiceRoll.new(self, drop, &block)
+      @rolls << DiceRoll.new(self, *args, &block)
       @rolls.last
     end
 
