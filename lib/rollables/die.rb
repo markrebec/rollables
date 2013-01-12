@@ -1,6 +1,6 @@
 module Rollables
   class Die < Array
-    attr_reader :rolls
+    attr_reader :modifier, :rolls
     
     def self.new(die)
       return die if die.is_a?(self.class) || die.is_a?(Dice)
@@ -30,16 +30,24 @@ module Rollables
       numeric? ? sort.first : first
     end
 
+    def modifier=(modifier)
+      modifier.is_a?(RollModifier) ? @modifier = modifier : @modifier = RollModifier.new(modifier)
+    end
+
+    def modifier?
+      !@modifier.nil?
+    end
+
     def notation
-      "1d#{simple? ? length : "#{length}(#{join(",")})"}"
+      "1d#{simple? ? length : "#{length}(#{join(",")})"}#{@modifier.to_s}"
     end
 
     def numeric?
       all? { |face| face.is_a?(Integer) }
     end
 
-    def roll
-      @rolls << DieRoll.new(self)
+    def roll(*args, &block)
+      @rolls << DieRoll.new(self, *args, &block)
       @rolls.last
     end
     
@@ -91,10 +99,11 @@ module Rollables
 
     def parse_string(notation)
       raise "Cannot parse empty notation string." if notation.to_s.empty?
-      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)\Z/i)
+      matches = notation.to_s.match(/\A((\d+)d||d)?(\d+)([+\-\*\/][0-9+\-\*\/\(\)]*)?\Z/i)
       raise "Invalid notation string #{notation}." if matches.nil?
       raise "Cannot create single Die from #{notation}." unless matches[2].nil? || matches[2].empty? || matches[2].to_i == 1
       matches[3].to_i.times.map { |face| self << DieFace.new(face+1) }
+      @modifier = RollModifier.new(matches[4])
     end
   end
 end

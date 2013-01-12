@@ -35,7 +35,6 @@ module Rollables
 
     def results
       roll_results = kept.collect(&:results)
-      #@drop.each { |drop| roll_results << drop } unless @drop.nil? || @drop.empty?
       @modifier.each { |modifier| roll_results << modifier } unless @modifier.nil? || @modifier.empty?
       roll_results
     end
