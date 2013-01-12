@@ -14,7 +14,7 @@ module Rollables
 
     def initialize(notation)
       matches = notation.match(/\A(([lh])([\d]*))\Z/i)
-      @type = matches[2]
+      @type = matches[2].downcase
       @count = (matches[3].to_i > 1 ? matches[3].to_i : 1)
     end
     

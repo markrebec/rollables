@@ -1,25 +1,32 @@
 module Rollables
   class DiceRoll < Array
-    attr_reader :dice, :drop, :modifiers, :timestamp
+    attr_reader :dice, :drop, :modifier, :timestamp
 
     def dropped
-      sort.slice(0,@drop.count)
+      sort.to_a.slice(0,@drop.map { |drop| drop.type == 'l' ? drop.count : 0 }.sum).concat(sort.to_a.slice(-(@drop.map { |drop| drop.type == 'h' ? drop.count : 0 }.sum), (@drop.map { |drop| drop.type == 'h' ? drop.count : 0 }.sum)))
+    end
+
+    def inspect
+      roll_results = collect(&:results)
+      @drop.each { |drop| roll_results << drop } unless @drop.nil? || @drop.empty?
+      @modifier.each { |modifier| roll_results << modifier } unless @modifier.nil? || @modifier.empty?
+      roll_results
     end
 
     def kept
-      sort.slice(-(length - @drop.count))
+      sort.to_a.slice((@drop.map { |drop| drop.type == 'l' ? drop.count : 0 }.sum), (@dice.length - (@drop.map { |drop| drop.type == 'l' ? drop.count : 0 }.sum)) - (@drop.map { |drop| drop.type == 'h' ? drop.count : 0 }.sum))
     end
 
     def modifier=(modifier)
-      @modifiers << RollModifier.new(modifier)
+      @modifier << RollModifier.new(modifier)
     end
 
     def result
-      if @modifiers.nil? || @modifiers.empty?
-        @dice.numeric? ? collect(&:result).flatten.sum : collect(&:result).join(",")
+      if @modifier.nil? || @modifier.empty?
+        @dice.numeric? ? kept.collect(&:result).flatten.sum : kept.collect(&:result).join(",")
       else
-        modified_result = (@dice.numeric? ? collect(&:result).flatten.sum : collect(&:result))
-        @modifiers.each { |modifier| modified_result = modifier.call(modified_result) }
+        modified_result = (@dice.numeric? ? kept.collect(&:result).flatten.sum : kept.collect(&:result))
+        @modifier.each { |modifier| modified_result = modifier.call(modified_result) }
         @dice.numeric? ? modified_result : modified_result.join(",")
       end
     end
@@ -27,15 +34,26 @@ module Rollables
     alias_method :to_i, :result
 
     def results
-      if @modifiers.nil? || @modifiers.empty?
-        collect(&:results)
-      else
-        modified_results = collect(&:results)
-        @modifiers.each { |modifier| modified_results << modifier }
-        modified_results
-      end
+      roll_results = kept.collect(&:results)
+      #@drop.each { |drop| roll_results << drop } unless @drop.nil? || @drop.empty?
+      @modifier.each { |modifier| roll_results << modifier } unless @modifier.nil? || @modifier.empty?
+      roll_results
     end
-    alias_method :inspect, :results
+
+    def sort(&block)
+      return super(&block) if block_given?
+      super(&proc do |x,y|
+        if x.result.class.name == y.result.class.name
+          x.result <=> y.result
+        elsif x.result.is_a?(Integer)
+          -1
+        elsif y.result.is_a?(Integer)
+          1
+        else
+          0
+        end
+      end)
+    end
 
     def to_s
       result.to_s
@@ -48,11 +66,11 @@ module Rollables
       params.merge!(args[0]) if args.length > 0
       @dice = dice.clone
       @drop = @dice.drop
-      @drop << RollDrop.new(params[:drop]) unless params[:drop].nil?
-      @modifiers = []
-      @modifiers << @dice.modifier if @dice.modifier?
-      @modifiers << RollModifier.new(params[:modifier]) unless params[:modifier].nil?
-      @modifiers << RollModifier.new(block) if block_given?
+      params[:drop].scan(/(([lh])([\d]*))/i) { |drop| @drop << RollDrop.new(drop[0]) } unless params[:drop].nil?
+      @modifier = []
+      @modifier << @dice.modifier if @dice.modifier?
+      @modifier << RollModifier.new(params[:modifier]) unless params[:modifier].nil?
+      @modifier << RollModifier.new(block) if block_given?
       roll
     end
 
