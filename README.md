@@ -37,25 +37,25 @@ Single die objects can be created with the `Die` class.  They can be rolled and 
 
     # Creating Dice
     
-    Rollables::Die.new(6)                                               # => d6
-    Rollables::Die.new("20")                                            # => d20
-    Rollables::Die.new(:d8)                                             # => d8
-    Rollables::Die.new("1d12")                                          # => d12
-    Rollables::Die.new("d12")                                           # => d12
-    Rollables::Die.new(1..6)                                            # => d6
-    Rollables::Die.new(5..10)                                           # => d6(5,6,7,8,9,10)
-    Rollables::Die.new(["a","b","c"])                                   # => d3(a,b,c)
-    Rollables::Die.new([0,5,10,20,40,80])                               # => d6(0,5,10,20,40,80)
+    Rollables::Die.new(6)                           # => d6
+    Rollables::Die.new("20")                        # => d20
+    Rollables::Die.new(:d8)                         # => d8
+    Rollables::Die.new("1d12")                      # => d12
+    Rollables::Die.new("d12")                       # => d12
+    Rollables::Die.new(1..6)                        # => d6
+    Rollables::Die.new(5..10)                       # => d6(5,6,7,8,9,10)
+    Rollables::Die.new(["a","b","c"])               # => d3(a,b,c)
+    Rollables::Die.new([0,5,10,20,40,80])           # => d6(0,5,10,20,40,80)
 
     # Rolling
     
     die = Rollables::Die.new(6)
-    die.roll                                                            # => 3
-    die.roll                                                            # => 1
-    die.roll                                                            # => 5
-    die.roll                                                            # => 1
-    die.roll                                                            # => 6
-    die.rolls                                                           # => [3, 1, 5, 1, 6]
+    die.roll                        # => 3
+    die.roll                        # => 1
+    die.roll                        # => 5
+    die.roll                        # => 1
+    die.roll                        # => 6
+    die.rolls                       # => [3, 1, 5, 1, 6]
 
 ### Multiple Dice
 
@@ -73,11 +73,11 @@ Multiple dice can be created using the `Dice` class.  They can be rolled and can
     # Rolling
     
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
-    dice.roll                                                           # => 1 + 1 + 12 + 6 = 20
-    dice.roll                                                           # => 1 + 3 + 1 + 5 = 10
-    dice.roll                                                           # => 5 + 6 + 1 + 4 = 16
-    dice.roll                                                           # => 1 + 8 + 1 + 2 = 12
-    dice.rolls                                                          # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
+    dice.roll                                     # => 1 + 1 + 12 + 6 = 20
+    dice.roll                                     # => 1 + 3 + 1 + 5 = 10
+    dice.roll                                     # => 5 + 6 + 1 + 4 = 16
+    dice.roll                                     # => 1 + 8 + 1 + 2 = 12
+    dice.rolls                                    # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
     
     dice = Rollables::Dice.new("2d6", Rollables::Die(["x","y","z"]))
     dice.roll                                                           # => 3 + 1 + y = 3,1,y
@@ -92,14 +92,14 @@ Standard (and even some non-standard) drop notations are supported, allowing for
     # Apply to a Roll
     
     dice = Rollables::Dice.new("5d6")
-    dice.roll                                                       # => 2 + 5 + 1 + 5 + 3 = 16
-    dice.roll(:drop => "l")                                         # => 2 + 5 + (1) + 5 + 3 = 15 (the 1 is excluded from the total)
+    dice.roll                                 # => 2 + 5 + 1 + 5 + 3 = 16
+    dice.roll(:drop => "l")                   # => 2 + 5 + (1) + 5 + 3 = 15 (the 1 is excluded from the total)
     
     # Apply to a Set of Dice
     
-    dice = Rollables::Dice.new("5d6h2")                             # drops the two highest die from each roll
-    dice.roll                                                       # => 2 + (5) + 1 + (5) + 3 = 6 (the two 5 are excluded from the total)
-    dice.roll(:drop => "l")                                         # => 2 + (5) + (1) + (5) + 3 = 5 (the 1 and two 5 are excluded from the total)
+    dice = Rollables::Dice.new("5d6h2")       # drops the two highest die from each roll
+    dice.roll                                 # => 2 + (5) + 1 + (5) + 3 = 6 (the two 5 are excluded from the total)
+    dice.roll(:drop => "l")                   # => 2 + (5) + (1) + (5) + 3 = 5 (the 1 and two 5 are excluded from the total)
     
 
 ### Modifiers
