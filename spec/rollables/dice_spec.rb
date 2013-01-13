@@ -126,13 +126,13 @@ describe Rollables::Dice do
   it "should return the correct value(s) for high" do
     Rollables::Dice.new(8, 20, 6).high.should == 34
     Rollables::Dice.new(20, Rollables::Die.new([0,5,10])).high.should == 30
-    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).high.should == [6,20,3]
+    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).high.map { |face| face.face }.to_a.should == [6,20,3]
   end
   
   it "should return the correct value(s) for low" do
     Rollables::Dice.new(8, 20, 6).low.should == 3
     Rollables::Dice.new(20, Rollables::Die.new([0,5,10])).low.should == 1
-    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).low.should == [1,1,"a"]
+    Rollables::Dice.new(6, 20, Rollables::Die.new(["a",2,3])).low.map { |face| face.face }.to_a.should == [1,1,"a"]
   end
   
   it "should return a properly formatted string from to_s" do

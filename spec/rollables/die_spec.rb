@@ -65,12 +65,12 @@ describe Rollables::Die do
 
   it "should have the correct assigned values for all faces" do
     die = Rollables::Die.new(["one", "two", "three", "four", "five", "six"])
-    die[0].should == "one"
-    die[1].should == "two"
-    die[2].should == "three"
-    die[3].should == "four"
-    die[4].should == "five"
-    die[5].should == "six"
+    die[0].face.should == "one"
+    die[1].face.should == "two"
+    die[2].face.should == "three"
+    die[3].face.should == "four"
+    die[4].face.should == "five"
+    die[5].face.should == "six"
   end
 
   it "should be numeric if all faces have numeric values" do
@@ -129,29 +129,29 @@ describe Rollables::Die do
   end
 
   it "should return the correct face value for high" do
-    Rollables::Die.new(20).high.should == 20
-    Rollables::Die.new([7,2,9,5,4]).high.should == 9
-    Rollables::Die.new(["a","b","c"]).high.should == "c"
-    Rollables::Die.new(["c","b","a"]).high.should == "a"
+    Rollables::Die.new(20).high.face.should == 20
+    Rollables::Die.new([7,2,9,5,4]).high.face.should == 9
+    Rollables::Die.new(["a","b","c"]).high.face.should == "c"
+    Rollables::Die.new(["c","b","a"]).high.face.should == "a"
   end
 
   it "should return the correct face value for low" do
-    Rollables::Die.new(20).low.should == 1
-    Rollables::Die.new([7,2,9,5,4]).low.should == 2
-    Rollables::Die.new(["a","b","c"]).low.should == "a"
-    Rollables::Die.new(["b","c","a"]).low.should == "b"
+    Rollables::Die.new(20).low.face.should == 1
+    Rollables::Die.new([7,2,9,5,4]).low.face.should == 2
+    Rollables::Die.new(["a","b","c"]).low.face.should == "a"
+    Rollables::Die.new(["b","c","a"]).low.face.should == "b"
   end
 
   it "should sort numeric faces when comparing high/low" do
-    Rollables::Die.new([7,2,9,5,4]).high.should == 9
-    Rollables::Die.new([7,2,9,5,4]).low.should == 2
+    Rollables::Die.new([7,2,9,5,4]).high.face.should == 9
+    Rollables::Die.new([7,2,9,5,4]).low.face.should == 2
   end
 
   it "should leave order intact for non-numeric faces when comparing high/low" do
-    Rollables::Die.new(["a","b","c"]).high.should == "c"
-    Rollables::Die.new(["a","b","c"]).low.should == "a"
-    Rollables::Die.new(["b","c","a"]).high.should == "a"
-    Rollables::Die.new(["b","c","a"]).low.should == "b"
+    Rollables::Die.new(["a","b","c"]).high.face.should == "c"
+    Rollables::Die.new(["a","b","c"]).low.face.should == "a"
+    Rollables::Die.new(["b","c","a"]).high.face.should == "a"
+    Rollables::Die.new(["b","c","a"]).low.face.should == "b"
   end
 
   it "should be able to be rolled" do
@@ -160,7 +160,7 @@ describe Rollables::Die do
 
   it "should always return a face value within it's parameters when rolled" do
     [Rollables::Die.new(6), Rollables::Die.new(:d12), Rollables::Die.new(["a","b","c"])].each do |die|
-      20.times { die.include?(die.roll.result).should be_true }
+      20.times { die.map { |face| face.face }.include?(die.roll.result).should be_true }
     end
   end
   

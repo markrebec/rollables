@@ -19,7 +19,7 @@ module Rollables
     end
 
     def common?
-      simple? && high == 6
+      simple? && high.face == 6
     end
 
     def high
@@ -43,7 +43,7 @@ module Rollables
     end
 
     def numeric?
-      all? { |face| face.is_a?(Integer) }
+      all? { |face| face.face.is_a?(Integer) }
     end
 
     def roll(*args, &block)
@@ -52,11 +52,16 @@ module Rollables
     end
     
     def sequential?
-      numeric? && sort.each_cons(2).all? { |x,y| y == x + 1 }
+      numeric? && sort.each_cons(2).all? { |x,y| y.face == x.face + 1 }
     end
   
     def simple?
-      sequential? && low == 1
+      sequential? && low.face == 1
+    end
+
+    def sort(&block)
+      return super(&block) if block_given?
+      super(&proc { |x,y| (x.face.is_a?(Integer) && y.face.is_a?(Integer)) ? x.face <=> y.face : 0 })
     end
 
     def to_s
@@ -90,7 +95,7 @@ module Rollables
 
     def parse_array(notation)
       raise "Cannot parse empty notation." if notation.empty?
-      notation.each { |face| self << ((face.stringy? && face.to_s.to_i.to_s == face.to_s) ? face.to_i : face) }
+      notation.each { |face| self << DieFace.new((face.stringy? && face.to_s.to_i.to_s == face.to_s) ? face.to_i : face) }
     end
 
     def parse_range(notation)

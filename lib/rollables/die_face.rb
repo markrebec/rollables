@@ -1,22 +1,19 @@
 module Rollables
   class DieFace
-    def self.new(face)
-      face = face.to_i if face.is_a?(String) && face.to_i.to_s == face
+    attr_reader :face
 
-      face.instance_eval do
-        # shared methods go here
-        if self.is_a?(Integer)
-          # integer methods go here
-        elsif self.is_a?(String)
-          # string methods go here
-        #elsif self.is_a?(Symbol)
-          # symbol methods go here
-        else
-          raise "Unsupported DieFace type `#{face.class.name}`"
-        end
-      end
-      
-      face
+    def self.new(face)
+      super
+    end
+
+    def to_s
+      @face.to_s
+    end
+
+    protected
+
+    def initialize(face)
+      @face = (face.is_a?(String) && face.to_i.to_s == face) ? face.to_i : face
     end
   end
 end
