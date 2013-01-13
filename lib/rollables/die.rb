@@ -64,6 +64,10 @@ module Rollables
       super(&proc { |x,y| (x.to_raw.is_a?(Integer) && y.to_raw.is_a?(Integer)) ? x.to_raw <=> y.to_raw : 0 })
     end
 
+    def to_dice
+      Dice.new(self)
+    end
+
     def to_s
       notation
     end
