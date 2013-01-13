@@ -56,7 +56,7 @@ module Rollables
     end
 
     def high
-      numeric? ? highs.map { |face| face.face }.sum : highs
+      numeric? ? highs.map { |face| face.to_raw }.sum : highs
     end
 
     def highs
@@ -64,7 +64,7 @@ module Rollables
     end
 
     def low
-      numeric? ? lows.map { |face| face.face }.sum : lows
+      numeric? ? lows.map { |face| face.to_raw }.sum : lows
     end
 
     def lows

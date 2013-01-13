@@ -19,7 +19,7 @@ module Rollables
     end
 
     def common?
-      simple? && high.face == 6
+      simple? && high.to_raw == 6
     end
 
     def high
@@ -43,7 +43,7 @@ module Rollables
     end
 
     def numeric?
-      all? { |face| face.face.is_a?(Integer) }
+      all? { |face| face.to_raw.is_a?(Integer) }
     end
 
     def roll(*args, &block)
@@ -52,16 +52,16 @@ module Rollables
     end
     
     def sequential?
-      numeric? && sort.each_cons(2).all? { |x,y| y.face == x.face + 1 }
+      numeric? && sort.each_cons(2).all? { |x,y| y.to_raw == x.to_raw + 1 }
     end
   
     def simple?
-      sequential? && low.face == 1
+      sequential? && low.to_raw == 1
     end
 
     def sort(&block)
       return super(&block) if block_given?
-      super(&proc { |x,y| (x.face.is_a?(Integer) && y.face.is_a?(Integer)) ? x.face <=> y.face : 0 })
+      super(&proc { |x,y| (x.to_raw.is_a?(Integer) && y.to_raw.is_a?(Integer)) ? x.to_raw <=> y.to_raw : 0 })
     end
 
     def to_s

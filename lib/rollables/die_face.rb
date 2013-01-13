@@ -6,6 +6,10 @@ module Rollables
       super
     end
 
+    def to_raw
+      @face
+    end
+
     def to_s
       @face.to_s
     end

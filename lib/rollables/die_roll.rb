@@ -10,9 +10,9 @@ module Rollables
 
     def result
       if @modifier.nil? || @modifier.empty?
-        @result.face
+        @result.to_raw
       else
-        modified_result = @result.face
+        modified_result = @result.to_raw
         @modifier.each { |modifier| modified_result = modifier.call(modified_result) }
         modified_result
       end
