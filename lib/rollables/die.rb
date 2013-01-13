@@ -65,7 +65,12 @@ module Rollables
     end
 
     def to_dice
-      Dice.new(self)
+      dice = Dice.new
+      dice.modifier = @modifier.clone
+      @modifier = nil
+      dice.add_dice(clone)
+      @modifier = dice.modifier.clone
+      dice
     end
 
     def to_s
