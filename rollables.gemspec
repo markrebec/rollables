@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/markrebec/rollables"
 
   s.add_dependency "activesupport"
-  s.add_dependency "sourcify", ">=0.6.0.rc2"
 
   s.add_development_dependency "rspec"
 end

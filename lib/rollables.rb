@@ -1,5 +1,4 @@
 require 'active_support/core_ext/enumerable'
-require 'sourcify'
 require 'object'
 
 require 'rollables/die'

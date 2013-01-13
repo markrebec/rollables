@@ -6,7 +6,9 @@ Dice creator for Ruby with support for complex die notations, nested sets of dic
 
 ### Requirements
 
-Rollables currently depends on the `activesupport` and `sourcify` gems.
+Rollables only requires the enumerable features from the `activesupport` gem (which is registered as a dependency in the gemspec).
+
+If you want to be able to print out the source code for your `proc` modifiers (to debug or explain what they're doing to the roll results), you should also install and require the [sourcify](https://github.com/ngty/sourcify) gem.  *The current version of `sourcify` (0.5.0) has a bug with double quotes. Until 0.6.0 is released, you might want to manually build and install from master (currently 0.6.0.rc2) instead. See [this thread](https://github.com/ngty/sourcify/issues/25) for details.*
 
 ### Install the Gem
 
