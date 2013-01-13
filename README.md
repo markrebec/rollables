@@ -145,8 +145,8 @@ Die have support for simple integer and string faces, but also allow you to supp
     # normally have been there.
     d8proc = proc { Die.new(12).roll }
     d6custom = Die.new([1, 2, d12proc, d12proc, 5, 6])
-    20.times.map { d6custom.roll { |result| result.respond_to?(:call) ? result.call : result } }
-    # => [6, 8, 2, 9, 10, 6, 8, 9, 5, 1, 2, 2, 2, 2, 1, 1, 6, 3, 6, 2]
+    20.times { d6custom.roll { |result| result.respond_to?(:call) ? result.call : result } }
+    d6custom.rolls          # => [6, 8, 2, 9, 10, 6, 8, 9, 5, 1, 2, 2, 2, 2, 1, 1, 6, 3, 6, 2]
 
 ## Tests
 
