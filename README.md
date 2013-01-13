@@ -112,29 +112,29 @@ Modifiers can be anything that can be eval'd or called against the result, such 
     
     die = Rollables::Die.new(:d6)
     die.roll                                                        # => 5
-    die.roll(:modifier => "+5")                                     # => 5 (+5) = 10
-    die.roll { |result| result + 10 }                               # => 5 (+10) = 15
-    die.roll(:modifier => "+5") { |result| result + 10 }            # => 5 (+5) (+10) = 20
+    die.roll(:modifier => "+5")                                     # => 5 +(5) = 10
+    die.roll { |result| result + 10 }                               # => 5 +(10) = 15
+    die.roll(:modifier => "+5") { |result| result + 10 }            # => 5 +(5) +(10) = 20
     
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
     dice.roll                                                       # => 1 + 1 + 12 + 6 = 20
-    dice.roll(:modifier => "+5")                                    # => 1 + 1 + 12 + 6 (+5) = 25
-    dice.roll { |result| result + 10 }                              # => 1 + 1 + 12 + 6 (+10) = 30
-    dice.roll(:modifier => "+5") { |result| result + 10 }           # => 1 + 1 + 12 + 6 (+5) (+10) = 35
+    dice.roll(:modifier => "+5")                                    # => 1 + 1 + 12 + 6 +(5) = 25
+    dice.roll { |result| result + 10 }                              # => 1 + 1 + 12 + 6 +(10) = 30
+    dice.roll(:modifier => "+5") { |result| result + 10 }           # => 1 + 1 + 12 + 6 +(5) +(10) = 35
     
     # Apply to a Die or Dice (for all rolls of those dice)
     
     die = Rollables::Die.new("1d6+5")
-    die.roll                                                        # => 4 (+5) = 9
-    die.roll(:modifier => "+5")                                     # => 4 (+5) (+5) = 14
-    die.roll { |result| result + 10 }                               # => 4 (+5) (+10) = 19
-    die.roll(:modifier => "+5") { |result| result + 10 }            # => 4 (+5) (+5) (+10) = 24
+    die.roll                                                        # => 4 +(5) = 9
+    die.roll(:modifier => "+5")                                     # => 4 +(5) +(5) = 14
+    die.roll { |result| result + 10 }                               # => 4 +(5) +(10) = 19
+    die.roll(:modifier => "+5") { |result| result + 10 }            # => 4 +(5) +(5) +(10) = 24
     
     dice = Rollables::Dice.new(:d6, "1d8+5", 12, 6)
-    dice.roll                                                       # => 1 + (1 (+5)) + 12 + 6 = 25
-    dice.roll(:modifier => "+5")                                    # => 1 + (1 (+5)) + 12 + 6 (+5) = 30
-    dice.roll { |result| result + 10 }                              # => 1 + (1 (+5)) + 12 + 6 (+10) = 35
-    dice.roll(:modifier => "+5") { |result| result + 10 }           # => 1 + (1 (+5)) + 12 + 6 (+5) (+10) = 40
+    dice.roll                                                       # => 1 + (1 +(5)) + 12 + 6 = 25
+    dice.roll(:modifier => "+5")                                    # => 1 + (1 +(5)) + 12 + 6 +(5) = 30
+    dice.roll { |result| result + 10 }                              # => 1 + (1 +(5)) + 12 + 6 +(10) = 35
+    dice.roll(:modifier => "+5") { |result| result + 10 }           # => 1 + (1 +(5)) + 12 + 6 +(5) +(10) = 40
 
 ### Custom Faces
 
