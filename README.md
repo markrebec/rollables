@@ -2,11 +2,15 @@
 
 Dice creator for Ruby with support for complex die notations, nested sets of dice, high/low drops, explode (#todo), roll modifiers and more.  
 
-## Requirements
+## Installation
+
+### Requirements
 
 Rollables currently depends on the `activesupport` and `sourcify` gems.
 
-## Installation
+### Install the Gem
+
+**Note: I haven't submitted the gem to rubygems.org yet, so this won't work.  For now, clone the repo, build the gem and install it from there.**
 
 You can install the gem with:
 
