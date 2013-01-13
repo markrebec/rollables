@@ -18,10 +18,12 @@ or by adding:
 
 in your Gemfile.
 
-You might also want to create base classes that inherit the `Die` and `Dice` functionality outside the `Rollables` namespace.  You can do that by creating a file with the following lines (for a rails app, `config/initializers/rollables.rb` is a good spot for this) and requiring it after `rollables` has been loaded:
+You might also want to create base classes that inherit the `Rollables::Die` and `Rollables::Dice` functionality outside the `Rollables` namespace.  You can do that by creating a file with the following lines (for a rails app, `config/initializers/rollables.rb` is a good spot for this) and requiring it after `rollables` has been loaded:
 
     class Die < Rollables::Die; end
     class Dice < Rollables::Dice; end
+
+That way you can just call `Die.new` or `Dice.new` to create new dice.
 
 ## Usage
 
