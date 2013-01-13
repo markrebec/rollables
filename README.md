@@ -134,6 +134,15 @@ Modifiers can be anything that can be eval'd or called against the result, such 
     dice.roll { |result| result + 10 }                              # => 1 + (1 (+5)) + 12 + 6 (+10) = 35
     dice.roll(:modifier => "+5") { |result| result + 10 }           # => 1 + (1 (+5)) + 12 + 6 (+5) (+10) = 40
 
+### Custom Faces
+
+Die have support for simple integer and string faces, but also allow you to supply custom faces (literally just about anything you want).  I've got plans to automate and build some of the basic stuff into `DieFace` (like automatically rolling the custom Die from the example below, rather than needing the custom block to do it).  Here is an example:
+
+    # Six-sided die with a custom face in the #3 and #4 slots, which when hit roll another twelve-sided die, providing a good chance to get up to a 2x bonus, or a slight chance to roll at or lower than the value of 3 or 4 that would normally have been there.
+    d8proc = proc { Die.new(12).roll }
+    d6custom = Die.new([1, 2, d12proc, d12proc, 5, 6])
+    20.times.map { d6custom.roll { |result| result.respond_to?(:call) ? result.call : result } }    # => [6, 8, 2, 9, 10, 6, 8, 9, 5, 1, 2, 2, 2, 2, 1, 1, 6, 3, 6, 2]
+
 ## Tests
 
 Rollables uses `rspec` and has coverage for most functionalty provided in the `/spec` directory.  If you want to run specs against the codebase, execute `bundle exec rspec` from within the checked out repo.
@@ -142,8 +151,6 @@ Rollables uses `rspec` and has coverage for most functionalty provided in the `/
 
 * Finish documentation
 * Refactor some of the core objects to use modules and included behavior
-* Support for more die faces besides strings and integers
-* Support for die faces with behaviors. Example: d(1,2,X,5,6) - "X" would be a proc that rolls another 1d6 3 times and picks the lowest result
 * Add support for rolling the dice `x` times
 * Add support for applying math to dice roll results. Example: `(1d6 * 1d3) + 1d8` instead of `1d6 + 1d3 + 1d8`
 * Implement 'explode'
