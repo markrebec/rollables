@@ -73,17 +73,17 @@ Multiple dice can be created using the `Dice` class.  They can be rolled and can
     # Rolling
     
     dice = Rollables::Dice.new(:d6, "1d8", 12, 6)
-    dice.roll                                     # => 1 + 1 + 12 + 6 = 20
-    dice.roll                                     # => 1 + 3 + 1 + 5 = 10
-    dice.roll                                     # => 5 + 6 + 1 + 4 = 16
-    dice.roll                                     # => 1 + 8 + 1 + 2 = 12
-    dice.rolls                                    # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
+    dice.roll               # => 1 + 1 + 12 + 6 = 20
+    dice.roll               # => 1 + 3 + 1 + 5 = 10
+    dice.roll               # => 5 + 6 + 1 + 4 = 16
+    dice.roll               # => 1 + 8 + 1 + 2 = 12
+    dice.rolls              # => [1 + 1 + 12 + 6 = 20, 1 + 3 + 1 + 5 = 10, 5 + 6 + 1 + 4 = 16, 1 + 8 + 1 + 2 = 12]
     
     dice = Rollables::Dice.new("2d6", Rollables::Die(["x","y","z"]))
-    dice.roll                                                           # => 3 + 1 + y = 3,1,y
-    dice.roll                                                           # => 4 + 3 + x = 4,3,x
-    dice.roll                                                           # => 1 + 2 + x = 1,2,x
-    dice.rolls                                                          # => [3 + 1 + y = 3,1,y, 4 + 3 + x = 4,3,x, 1 + 2 + x = 1,2,x]
+    dice.roll               # => 3 + 1 + y = 3,1,y
+    dice.roll               # => 4 + 3 + x = 4,3,x
+    dice.roll               # => 1 + 2 + x = 1,2,x
+    dice.rolls              # => [3 + 1 + y = 3,1,y, 4 + 3 + x = 4,3,x, 1 + 2 + x = 1,2,x]
 
 ### Drops
 
@@ -138,10 +138,13 @@ Modifiers can be anything that can be eval'd or called against the result, such 
 
 Die have support for simple integer and string faces, but also allow you to supply custom faces (literally just about anything you want).  I've got plans to automate and build some of the basic stuff into `DieFace` (like automatically rolling the custom Die from the example below, rather than needing the custom block to do it).  Here is an example:
 
-    # Six-sided die with a custom face in the #3 and #4 slots, which when hit roll another twelve-sided die, providing a good chance to get up to a 2x bonus, or a slight chance to roll at or lower than the value of 3 or 4 that would normally have been there.
+    # Six-sided die with a custom face in the #3 and #4 slots, which when hit roll another twelve-sided die, providing a
+    # good chance to get up to a 2x bonus, or a slight chance to roll at or lower than the value of 3 or 4 that would
+    # normally have been there.
     d8proc = proc { Die.new(12).roll }
     d6custom = Die.new([1, 2, d12proc, d12proc, 5, 6])
-    20.times.map { d6custom.roll { |result| result.respond_to?(:call) ? result.call : result } }    # => [6, 8, 2, 9, 10, 6, 8, 9, 5, 1, 2, 2, 2, 2, 1, 1, 6, 3, 6, 2]
+    20.times.map { d6custom.roll { |result| result.respond_to?(:call) ? result.call : result } }
+    # => [6, 8, 2, 9, 10, 6, 8, 9, 5, 1, 2, 2, 2, 2, 1, 1, 6, 3, 6, 2]
 
 ## Tests
 
